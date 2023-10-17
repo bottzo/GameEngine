@@ -18,13 +18,7 @@ ModuleOpenGL::~ModuleOpenGL()
 bool ModuleOpenGL::Init()
 {
 	LOG("Creating Renderer context");
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4); // desired version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); // we want a double buffer
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); // we want to have a depth buffer with 24 bits
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8); // we want to have a stencil buffer with 8 bits
 	context = SDL_GL_CreateContext(App->GetWindow()->window);
 
 	GLenum err = glewInit();
@@ -47,11 +41,12 @@ update_status ModuleOpenGL::PreUpdate()
 	glEnable(GL_CULL_FACE); // Enable cull backward faces
 	glFrontFace(GL_CCW); // Front faces will be counter clockwise
 	
-	int w, h;
+	int w = 0;
+	int h = 0;
 	SDL_GetWindowSize(App->GetWindow()->window, &w, &h);
 	glViewport(0, 0, w, h);
 	glClearColor(0.1f, 0.9f, 0.9f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT || GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	return UPDATE_CONTINUE;
 }
