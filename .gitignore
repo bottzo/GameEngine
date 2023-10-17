@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 !Engine/Source/Glew/lib/glew32.lib
+!Engine/Source/SDL/lib
