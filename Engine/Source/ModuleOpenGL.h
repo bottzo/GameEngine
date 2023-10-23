@@ -23,4 +23,5 @@ private:
 	void* context;
 	unsigned int VAO;
 	unsigned int programId;
+	unsigned int indices[6] = { 0,1,2,3,2,1 };
 };

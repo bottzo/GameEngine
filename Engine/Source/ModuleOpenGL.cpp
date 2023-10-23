@@ -45,6 +45,7 @@ bool ModuleOpenGL::Init()
 	if (shaderErr == GL_FALSE)
 	{
 		glGetShaderInfoLog(vShader, 500 * sizeof(char), NULL, log);
+		//LOG("GLSL: ");
 		return false;
 	}
 	unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -71,11 +72,13 @@ bool ModuleOpenGL::Init()
 	float vertex[] = {
 	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
 	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+	 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f
 	};
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -85,6 +88,13 @@ bool ModuleOpenGL::Init()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(sizeof(float) * 3));
 	glEnableVertexAttribArray(1);
+
+	//unsigned int indices[6] = {1,2,3,4,3,2};
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	return true;
 }
 
@@ -115,7 +125,8 @@ update_status ModuleOpenGL::PostUpdate()
 {
 	glBindVertexArray(VAO);
 	glUseProgram(programId);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	//glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	SDL_GL_SwapWindow(App->GetWindow()->window);
 	return UPDATE_CONTINUE;
 }
