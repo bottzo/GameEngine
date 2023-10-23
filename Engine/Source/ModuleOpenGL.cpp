@@ -89,7 +89,7 @@ bool ModuleOpenGL::Init()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(sizeof(float) * 3));
 	glEnableVertexAttribArray(1);
 
-	//unsigned int indices[6] = {1,2,3,4,3,2};
+	unsigned int indices[6] = {0,1,2,3,2,1};
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
