@@ -32,6 +32,59 @@ bool ModuleOpenGL::Init()
 	LOG("Renderer: %s", glGetString(GL_RENDERER));
 	LOG("OpenGL version supported %s", glGetString(GL_VERSION));
 	LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+
+
+	int shaderErr = 0;
+	char log[500];
+	unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
+	const char* vShaderSource = "#version 460 core\nlayout(location = 0) in vec3 pos;\nlayout(location = 1) in vec3 inCol;\nout vec3 col;\nvoid main(){\ncol=inCol;\ngl_Position = vec4(pos, 1.0f);\n}";
+	glShaderSource(vShader, 1, &vShaderSource, NULL);
+	glCompileShader(vShader);
+	glGetShaderiv(vShader, GL_COMPILE_STATUS, &shaderErr);
+	if (shaderErr == GL_FALSE)
+	{
+		glGetShaderInfoLog(vShader, 500 * sizeof(char), NULL, log);
+		return false;
+	}
+	unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
+	const char* fShaderSource = "#version 460 core\nin vec3 col; out vec4 fragColor;\nvoid main(){\nfragColor = vec4(col, 1.0f);\n}";
+	glShaderSource(fShader, 1, &fShaderSource, NULL);
+	glCompileShader(fShader);
+	glGetShaderiv(fShader, GL_COMPILE_STATUS, &shaderErr);
+	if (shaderErr == GL_FALSE)
+	{
+		glGetShaderInfoLog(fShader, 500 * sizeof(char), NULL, log);
+		return false;
+	}
+	programId = glCreateProgram();
+	glAttachShader(programId, vShader);
+	glAttachShader(programId, fShader);
+	glLinkProgram(programId);
+	glGetProgramiv(programId, GL_LINK_STATUS, &shaderErr);
+	if (shaderErr == GL_FALSE)
+	{
+		glGetProgramInfoLog(programId, 500 * sizeof(char), NULL, log);
+		return false;
+	}
+
+	float vertex[] = {
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+	 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+	};
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(1);
 	return true;
 }
 
@@ -45,7 +98,7 @@ update_status ModuleOpenGL::PreUpdate()
 	int h = 0;
 	SDL_GetWindowSize(App->GetWindow()->window, &w, &h);
 	glViewport(0, 0, w, h);
-	glClearColor(0.1f, 0.9f, 0.9f, 1.0f);
+	glClearColor(0.f, 0.f, 0.5f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	return UPDATE_CONTINUE;
@@ -60,6 +113,9 @@ update_status ModuleOpenGL::Update()
 
 update_status ModuleOpenGL::PostUpdate()
 {
+	glBindVertexArray(VAO);
+	glUseProgram(programId);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	SDL_GL_SwapWindow(App->GetWindow()->window);
 	return UPDATE_CONTINUE;
 }
