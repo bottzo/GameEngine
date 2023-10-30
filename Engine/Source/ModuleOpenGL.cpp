@@ -117,16 +117,16 @@ update_status ModuleOpenGL::PreUpdate()
 // Called every draw update
 update_status ModuleOpenGL::Update()
 {
-
+	glBindVertexArray(VAO);
+	glUseProgram(programId);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleOpenGL::PostUpdate()
 {
-	glBindVertexArray(VAO);
-	glUseProgram(programId);
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
 	SDL_GL_SwapWindow(App->GetWindow()->window);
 	return UPDATE_CONTINUE;
 }
