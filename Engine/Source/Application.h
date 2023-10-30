@@ -1,6 +1,6 @@
 #pragma once
 
-#include<list>
+#include<vector>
 #include "Globals.h"
 #include "Module.h"
 
@@ -31,7 +31,7 @@ private:
     ModuleWindow* window = nullptr;
     ModuleInput* input = nullptr;
 
-    std::list<Module*> modules;
+    std::vector<Module*> modules;
 
 };
 
