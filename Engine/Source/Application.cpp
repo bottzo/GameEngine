@@ -3,14 +3,16 @@
 #include "ModuleWindow.h"
 #include "ModuleOpenGL.h"
 #include "ModuleInput.h"
+#include "ModuleEditor.h"
 
 Application::Application()
 {
-	modules.reserve(3);
+	modules.reserve(4);
 	// Order matters: they will Init/start/update in this order
+	modules.push_back(input = new ModuleInput());
 	modules.push_back(window = new ModuleWindow());
 	modules.push_back(render = new ModuleOpenGL());
-	modules.push_back(input = new ModuleInput());
+	modules.push_back(editor = new ModuleEditor());
 }
 
 Application::~Application()
