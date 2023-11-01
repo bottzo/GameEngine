@@ -82,7 +82,8 @@ update_status ModuleEditor::PreUpdate()
 update_status ModuleEditor::Update()
 {
     static bool a = true;
-    ImGui::ShowDemoWindow(&a);
+    if(a)
+        ImGui::ShowDemoWindow(&a);
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

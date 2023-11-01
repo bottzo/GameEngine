@@ -1,3 +1,6 @@
+//TODO: secure no warnings no es portable
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleOpenGL.h"
@@ -12,6 +15,126 @@ ModuleOpenGL::ModuleOpenGL()
 // Destructor
 ModuleOpenGL::~ModuleOpenGL()
 {
+}
+
+//TODO: On posem callback funtion? En global space, static o en la classe?
+static void __stdcall OpenGLErrorFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	const char* tmp_source = "", * tmp_type = "", * tmp_severity = "";
+	switch (source) {
+	case GL_DEBUG_SOURCE_API: tmp_source = "API"; break;
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM: tmp_source = "Window System"; break;
+	case GL_DEBUG_SOURCE_SHADER_COMPILER: tmp_source = "Shader Compiler"; break;
+	case GL_DEBUG_SOURCE_THIRD_PARTY: tmp_source = "Third Party"; break;
+	case GL_DEBUG_SOURCE_APPLICATION: tmp_source = "Application"; break;
+	case GL_DEBUG_SOURCE_OTHER: tmp_source = "Other"; break;
+	};
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR: tmp_type = "Error"; break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: tmp_type = "Deprecated Behaviour"; break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: tmp_type = "Undefined Behaviour"; break;
+	case GL_DEBUG_TYPE_PORTABILITY: tmp_type = "Portability"; break;
+	case GL_DEBUG_TYPE_PERFORMANCE: tmp_type = "Performance"; break;
+	case GL_DEBUG_TYPE_MARKER: tmp_type = "Marker"; break;
+	case GL_DEBUG_TYPE_PUSH_GROUP: tmp_type = "Push Group"; break;
+	case GL_DEBUG_TYPE_POP_GROUP: tmp_type = "Pop Group"; break;
+	case GL_DEBUG_TYPE_OTHER: tmp_type = "Other"; break;
+	};
+	switch (severity) {
+	case GL_DEBUG_SEVERITY_HIGH: tmp_severity = "high"; break;
+	case GL_DEBUG_SEVERITY_MEDIUM: tmp_severity = "medium"; break;
+	case GL_DEBUG_SEVERITY_LOW: tmp_severity = "low"; break;
+	case GL_DEBUG_SEVERITY_NOTIFICATION: tmp_severity = "notification"; break;
+	};
+	LOG("<Source:%s> <Type:%s> <Severity:%s> <ID:%d> <Message:%s>\n", tmp_source, tmp_type, tmp_severity, id, message);
+}
+
+//TODO: on poso aquesta funcio!!!
+bool FileToBuffer(const char* filePath, char** buffer)
+{
+	//Note: necesito posar tambe el mode de obrir el file??
+	FILE* file = fopen(filePath, "rb");
+	if (file == NULL)
+		return false;
+	fseek(file, 0, SEEK_END);
+	long size = ftell(file);
+	*buffer = (char*)malloc(size + 1);
+	fseek(file, 0, SEEK_SET);
+	fread(*buffer, 1, size, file);
+	(*buffer)[size] = '\0';
+	fclose(file);
+	return true;
+}
+
+//TODO: on poso aquesta funcio
+static unsigned int CompileShader(const char* sourcePath, GLenum type)
+{
+	char* sourceBuffer = nullptr;
+	unsigned int shaderId = glCreateShader(type);
+	if (!FileToBuffer(sourcePath, &sourceBuffer))
+	{
+		glDeleteShader(shaderId);
+		return 0;
+	}
+	glShaderSource(shaderId, 1, &sourceBuffer, NULL);
+	free(sourceBuffer);
+	sourceBuffer = nullptr;
+	glCompileShader(shaderId);
+	int shaderErr = 0;
+	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &shaderErr);
+	if (shaderErr == GL_FALSE)
+	{
+		int length = 0;
+		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length);
+		if (length == 0)
+			return 0;
+		char* errMessage = (char*)malloc(length);
+		glGetShaderInfoLog(shaderId, length, NULL, errMessage);
+		LOG("%s\n", errMessage);
+		free(errMessage);
+		return 0;
+	}
+	return shaderId;
+}
+
+//TODO: on poso aquesta funcio
+//Varios paths input
+//funcio ha de poder deduir de qiun tipus de shader es tracta (vertex/geometry/fragment)
+//construir el programa apartir de tots els shaders de input
+static unsigned int CreateProgram(const char* vShaderPath, const char* fShaderPath)
+{
+	unsigned int vShaderId = CompileShader(vShaderPath, GL_VERTEX_SHADER);
+	if (!vShaderId)
+		return 0;
+	unsigned int fShaderId = CompileShader(fShaderPath, GL_FRAGMENT_SHADER);
+	if (!fShaderId)
+	{
+		glDeleteShader(vShaderId);
+		return 0;
+	}
+	unsigned int programId = glCreateProgram();
+	glAttachShader(programId, vShaderId);
+	glAttachShader(programId, fShaderId);
+	glLinkProgram(programId);
+	int shaderErr = 0;
+	glGetProgramiv(programId, GL_LINK_STATUS, &shaderErr);
+	if (shaderErr == GL_FALSE)
+	{
+		int length = 0;
+		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &length);
+		if (length == 0)
+			return 0;
+		char* errMessage = (char*)malloc(length);
+		glGetProgramInfoLog(programId, length, NULL, errMessage);
+		LOG("%s", errMessage);
+		free(errMessage);
+		return 0;
+	}
+	glDetachShader(programId, vShaderId);
+	glDetachShader(programId, fShaderId);
+	glDeleteShader(vShaderId);
+	glDeleteShader(fShaderId);
+	return programId;
 }
 
 // Called before render is available
@@ -33,41 +156,16 @@ bool ModuleOpenGL::Init()
 	LOG("OpenGL version supported %s", glGetString(GL_VERSION));
 	LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+#ifdef _DEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(OpenGLErrorFunction, nullptr);
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
+#endif // _DEBUG
 
-
-	int shaderErr = 0;
-	char log[500];
-	unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
-	const char* vShaderSource = "#version 460 core\nlayout(location = 0) in vec3 pos;\nlayout(location = 1) in vec3 inCol;\nout vec3 col;\nvoid main(){\ncol=inCol;\ngl_Position = vec4(pos, 1.0f);\n}";
-	glShaderSource(vShader, 1, &vShaderSource, NULL);
-	glCompileShader(vShader);
-	glGetShaderiv(vShader, GL_COMPILE_STATUS, &shaderErr);
-	if (shaderErr == GL_FALSE)
-	{
-		glGetShaderInfoLog(vShader, 500 * sizeof(char), NULL, log);
-		//LOG("GLSL: ");
+	programId = CreateProgram("Shaders/Vertex.glsl", "Shaders/Fragment.glsl");
+	if (programId == 0)
 		return false;
-	}
-	unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
-	const char* fShaderSource = "#version 460 core\nin vec3 col; out vec4 fragColor;\nvoid main(){\nfragColor = vec4(col, 1.0f);\n}";
-	glShaderSource(fShader, 1, &fShaderSource, NULL);
-	glCompileShader(fShader);
-	glGetShaderiv(fShader, GL_COMPILE_STATUS, &shaderErr);
-	if (shaderErr == GL_FALSE)
-	{
-		glGetShaderInfoLog(fShader, 500 * sizeof(char), NULL, log);
-		return false;
-	}
-	programId = glCreateProgram();
-	glAttachShader(programId, vShader);
-	glAttachShader(programId, fShader);
-	glLinkProgram(programId);
-	glGetProgramiv(programId, GL_LINK_STATUS, &shaderErr);
-	if (shaderErr == GL_FALSE)
-	{
-		glGetProgramInfoLog(programId, 500 * sizeof(char), NULL, log);
-		return false;
-	}
 
 	float vertex[] = {
 	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
