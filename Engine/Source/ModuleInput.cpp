@@ -41,7 +41,9 @@ update_status ModuleInput::Update()
             case SDL_QUIT:
                 return UPDATE_STOP;
             case SDL_WINDOWEVENT:
-                if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                //https://github.com/ocornut/imgui/blob/master/examples/example_sdl2_opengl3/main.cpp
+                //if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
                     App->GetOpenGL()->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
                 if (sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE)
                     return UPDATE_STOP;

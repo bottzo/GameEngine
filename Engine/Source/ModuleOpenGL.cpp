@@ -194,19 +194,23 @@ bool ModuleOpenGL::Init()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	return true;
-}
-
-update_status ModuleOpenGL::PreUpdate()
-{
 	glEnable(GL_DEPTH_TEST); // Enable depth test
 	glEnable(GL_CULL_FACE); // Enable cull backward faces
 	glFrontFace(GL_CCW); // Front faces will be counter clockwise
-	
 	int w = 0;
 	int h = 0;
 	SDL_GetWindowSize(App->GetWindow()->window, &w, &h);
 	glViewport(0, 0, w, h);
+
+	return true;
+}
+
+update_status ModuleOpenGL::PreUpdate()
+{	
+	//int w = 0;
+	//int h = 0;
+	//SDL_GetWindowSize(App->GetWindow()->window, &w, &h);
+	//glViewport(0, 0, w, h);
 	glClearColor(0.f, 0.f, 0.5f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -244,4 +248,5 @@ bool ModuleOpenGL::CleanUp()
 
 void ModuleOpenGL::WindowResized(unsigned width, unsigned height)
 {
+	glViewport(0, 0, width, height);
 }
