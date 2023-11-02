@@ -71,7 +71,7 @@ update_status ModuleEditor::PreUpdate()
 {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame(App->GetWindow()->window);
+    ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
 

@@ -137,6 +137,12 @@ static unsigned int CreateProgram(const char* vShaderPath, const char* fShaderPa
 	return programId;
 }
 
+//TODO: Uniform struct for mandlebrot bad
+typedef struct {
+	unsigned int colorPeriod;
+	unsigned int maxIterations;
+} Uniforms;
+
 // Called before render is available
 bool ModuleOpenGL::Init()
 {
@@ -164,15 +170,31 @@ bool ModuleOpenGL::Init()
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);
 #endif // _DEBUG
 
-	programId = CreateProgram("Shaders/Vertex.glsl", "Shaders/Fragment.glsl");
+	int w, h;
+	SDL_GetWindowSize(App->GetWindow()->window, &w, &h);
+
+	//programId = CreateProgram("Shaders/Vertex.glsl", "Shaders/Fragment.glsl");
+	programId = CreateProgram("Shaders/MandelbrotVertex.glsl", "Shaders/MandelbrotFragment.glsl");
+
 	if (programId == 0)
 		return false;
+	glUseProgram(programId);
+	double centerX = -0.55;
+	double centerY = 0.0;
+	double cLength = 2.0;
+	Uniforms unis = { 24, 1000 };
+	glUniform1ui(0, unis.maxIterations);
+	glUniform1ui(1, unis.colorPeriod);	   
+	glUniform2i(2, w, h);
+	glUniform1d(3, cLength);
+	glUniform2d(4, centerX, centerY);
+
 
 	float vertex[] = {
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-	 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f
+	-0.95f, -0.95f, 0.0f, 1.0f, 0.0f, 0.0f,
+	 0.95f, -0.95f, 0.0f, 0.0f, 1.0f, 0.0f,
+	-0.95f,  0.95f, 0.0f, 0.0f, 0.0f, 1.0f,
+	 0.95f, 0.95f, 0.0f, 1.0f, 0.0f, 0.0f
 	};
 
 	glGenVertexArrays(1, &VAO);
@@ -197,9 +219,8 @@ bool ModuleOpenGL::Init()
 	glEnable(GL_DEPTH_TEST); // Enable depth test
 	glEnable(GL_CULL_FACE); // Enable cull backward faces
 	glFrontFace(GL_CCW); // Front faces will be counter clockwise
-	int w = 0;
-	int h = 0;
-	SDL_GetWindowSize(App->GetWindow()->window, &w, &h);
+
+
 	glViewport(0, 0, w, h);
 
 	return true;
