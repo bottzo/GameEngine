@@ -1,10 +1,11 @@
-#ifndef __ModuleWindow_H__
-#define __ModuleWindow_H__
+#ifndef MODULEWINDOW
+#define MODULEWINDOW
 
 #include "Module.h"
-#include "SDL/include/SDL.h"
 
 class Application;
+struct SDL_Window;
+struct SDL_Surface;
 
 class ModuleWindow : public Module
 {
@@ -29,4 +30,4 @@ public:
 	SDL_Surface* screen_surface = NULL;
 };
 
-#endif // __ModuleWindow_H__
+#endif // MODULEWINDOW

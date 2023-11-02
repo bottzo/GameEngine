@@ -1,9 +1,10 @@
-#pragma once
+#ifndef APP
+#define APP
 
 #include<vector>
 #include "Globals.h"
-#include "Module.h"
 
+class Module;
 class ModuleOpenGL;
 class ModuleWindow;
 class ModuleTextures;
@@ -39,3 +40,5 @@ private:
 };
 
 extern Application* App;
+
+#endif // !APP

@@ -1,4 +1,4 @@
-#pragma once
+#include "Module.h"
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleOpenGL.h"

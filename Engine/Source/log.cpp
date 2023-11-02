@@ -1,7 +1,7 @@
-#pragma once
 #include <windows.h>
 #include <stdio.h>
 
+//TODO: this log is just for windows, not portable
 void log(const char file[], int line, const char* format, ...)
 {
 	static char tmp_string[4096];

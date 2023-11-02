@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MODULEEDITOR
+#define MODULEEDITOR
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -14,3 +16,5 @@ public:
 	update_status PostUpdate() override;
 	bool CleanUp() override;
 };
+
+#endif // !MODULEEDITOR

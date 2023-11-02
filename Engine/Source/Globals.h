@@ -1,5 +1,7 @@
-//TODO: Canviar els #pragma once per defines header guards
-#pragma once
+#ifndef GLOBALS
+#define GLOBALS
+
+//TODO: posar CMAKE per fer l'app portable i compilable optimitzadament amb clang
 
 #define LOG(format, ...) log(__FILE__, __LINE__, format, __VA_ARGS__);
 
@@ -19,3 +21,5 @@ enum update_status
 #define RESIZEABLE true
 #define VSYNC true
 #define TITLE "Super Awesome Engine"
+
+#endif // !GLOBALS

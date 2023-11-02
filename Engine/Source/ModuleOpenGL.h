@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MODULEOPENGL
+#define MODULEOPENGL
+
 #include "Module.h"
 #include "Globals.h"
 
@@ -24,3 +26,5 @@ private:
 	unsigned int VAO;
 	unsigned int programId;
 };
+
+#endif // !MODULEOPENGL
