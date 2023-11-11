@@ -23,8 +23,6 @@ public:
 
 private:
 	void* context;
-	unsigned int VAO;
-	unsigned int programId;
 };
 
 #endif // !MODULEOPENGL

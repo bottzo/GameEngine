@@ -163,6 +163,7 @@
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
     <ClCompile Include="ModuleOpenGL.cpp" />
+    <ClCompile Include="ModuleRederExercise.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,7 +173,14 @@
     <ClInclude Include="ModuleEditor.h" />
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleOpenGL.h" />
+    <ClInclude Include="ModuleRenderExercise.h" />
     <ClInclude Include="ModuleWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Game\Shaders\Fragment.glsl" />
+    <None Include="..\Game\Shaders\MandelbrotFragment.glsl" />
+    <None Include="..\Game\Shaders\MandelbrotVertex.glsl" />
+    <None Include="..\Game\Shaders\Vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

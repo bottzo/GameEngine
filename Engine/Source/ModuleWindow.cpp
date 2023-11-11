@@ -81,3 +81,6 @@ bool ModuleWindow::CleanUp()
 	return true;
 }
 
+void ModuleWindow::GetWindowSize(int* w, int* h) {
+	SDL_GetWindowSize(window, w, h);
+}

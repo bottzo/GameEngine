@@ -1,4 +1,8 @@
 #version 460
+
+//https://www.khronos.org/opengl/wiki/Early_Fragment_Test
+//layout(early_fragment_tests) in;
+
 const vec3 col1 = vec3(1.f, 0, 0.0f);
 const vec3 col2 = vec3(1.0, 1.0, 0.f);
 

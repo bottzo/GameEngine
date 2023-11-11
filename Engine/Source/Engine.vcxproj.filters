@@ -29,6 +29,7 @@
       <Filter>Imgui</Filter>
     </ClCompile>
     <ClCompile Include="ModuleEditor.cpp" />
+    <ClCompile Include="ModuleRederExercise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -38,10 +39,28 @@
     <ClInclude Include="ModuleOpenGL.h" />
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="ModuleEditor.h" />
+    <ClInclude Include="ModuleRenderExercise.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Imgui">
       <UniqueIdentifier>{cc687bcb-91b1-46da-95b8-2452fb40ff63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{88142e9c-6037-41ea-bdeb-98e98a690895}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Game\Shaders\Fragment.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Game\Shaders\MandelbrotFragment.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Game\Shaders\MandelbrotVertex.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Game\Shaders\Vertex.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

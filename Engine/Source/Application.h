@@ -34,6 +34,7 @@ private:
     ModuleWindow* window = nullptr;
     ModuleInput* input = nullptr;
     ModuleEditor* editor = nullptr;
+    ModuleRenderExercise* exercise = nullptr;
 
     std::vector<Module*> modules;
 
