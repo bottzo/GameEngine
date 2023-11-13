@@ -125,10 +125,10 @@ bool ModuleRenderExercise::Init()
 
 
 	float vertex[] = {
-	-0.95f, -0.95f, 0.0f,
-	 0.95f, -0.95f, 0.0f,
-	-0.95f,  0.95f, 0.0f,
-	 0.95f, 0.95f, 0.0f
+	-1.0f, -1.0f, 0.0f,
+	 1.0f, -1.0f, 0.0f,
+	-1.0f,  1.0f, 0.0f,
+	 1.0f, 1.0f, 0.0f
 	};
 
 	glGenVertexArrays(1, &VAO);
@@ -138,7 +138,7 @@ bool ModuleRenderExercise::Init()
 	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
 
 	unsigned int indices[6] = { 0,1,2,3,2,1 };
@@ -152,6 +152,16 @@ update_status ModuleRenderExercise::Update()
 {
 	static bool window = true;
 	ImGui::Begin("Mandelbrot ui window", &window);
+	if (ImGui::InputDouble("CLength", &cLength, 0.1))
+	{
+		glUseProgram(programId);
+		glUniform1d(3, cLength);
+		if (cLength > prevCLength)
+			cLength = (cLength - 0.1) * 0.99;
+		else
+			cLength = (cLength + 0.1) * 1.01;
+		prevCLength = cLength;
+	}
 	if (ImGui::InputDouble("CenterX", &centerX, stepCenter))
 	{
 		glUseProgram(programId);
@@ -163,16 +173,6 @@ update_status ModuleRenderExercise::Update()
 		glUseProgram(programId);
 		glUniform2d(4, centerX, centerY);
 		stepCenter = 0.01 * cLength;
-	}
-	if (ImGui::InputDouble("CLength", &cLength, 0.1))
-	{
-		glUseProgram(programId);
-		glUniform1d(3,cLength);
-		if (cLength > prevCLength)
-			cLength = (cLength - 0.1) * 0.99;
-		else
-			cLength = (cLength + 0.1) * 1.01;
-		prevCLength = cLength;
 	}
 	if (ImGui::DragInt("MaxIterations", (int*)&unis.maxIterations))
 	{
