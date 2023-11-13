@@ -1,6 +1,10 @@
 #include "ModuleRenderExercise.h"
 #include "GL/glew.h"
 #include "Files.h"
+#include "Application.h"
+#include "ModuleWindow.h"
+#include "Geometry/Frustum.h"
+#include "Math/MathAll.h"
 
 ModuleRenderExercise::ModuleRenderExercise() 
 {
@@ -8,6 +12,13 @@ ModuleRenderExercise::ModuleRenderExercise()
 
 ModuleRenderExercise::~ModuleRenderExercise()
 {
+}
+
+float4x4 LookAt(float3 eyePos, float3 targetPos, float3 upVector) {
+	float3 forward = targetPos - eyePos;
+	forward.Normalize();
+	float3 right = math::Cross(forward, upVector);
+	forward = 
 }
 
 bool ModuleRenderExercise::Init()
@@ -18,6 +29,20 @@ bool ModuleRenderExercise::Init()
 		return false;
 	glUseProgram(programId);
 	//uniforms
+	Frustum frustum;
+	frustum.type = FrustumType::PerspectiveFrustum;
+	frustum.pos = float3::zero;
+	frustum.front = -float3::unitZ;
+	frustum.up = float3::unitY;
+	frustum.nearPlaneDistance = 0.1f;
+	frustum.farPlaneDistance = 100.0f;
+	frustum.verticalFov = math::pi / 4.0f;
+	int w, h;
+	App->GetWindow()->GetWindowSize(&w, &h);
+	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w/(float)h);
+	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),float4x4::RotateZ(pi / 4.0f),float3(2.0f, 1.0f, 1.0f));
+	float4x4 view = LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+	float4x4 proj = frustum.ProjectionMatrix();
 
 
 	float vertex[] = {
