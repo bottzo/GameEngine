@@ -5,6 +5,7 @@
 #include "ModuleRenderExercise.h"
 #include "ModuleWindow.h"
 #include "GL/glew.h"
+#include "imgui.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -96,12 +97,6 @@ static unsigned int CreateProgram(const char* vShaderPath, const char* fShaderPa
 	return programId;
 }
 
-//TODO: Uniform struct for mandlebrot bad
-typedef struct {
-	unsigned int colorPeriod;
-	unsigned int maxIterations;
-} Uniforms;
-
 ModuleRenderExercise::ModuleRenderExercise() 
 {
 }
@@ -118,10 +113,6 @@ bool ModuleRenderExercise::Init()
 	if (programId == 0)
 		return false;
 	glUseProgram(programId);
-	double centerX = -0.55;
-	double centerY = 0.0;
-	double cLength = 2.0;
-	Uniforms unis = { 24, 1000 };
 	glUniform1ui(0, unis.maxIterations);
 	glUniform1ui(1, unis.colorPeriod);
 	int w, h;
@@ -129,13 +120,15 @@ bool ModuleRenderExercise::Init()
 	glUniform2i(2, w, h);
 	glUniform1d(3, cLength);
 	glUniform2d(4, centerX, centerY);
+	glUniform3f(5, colors[0], colors[1], colors[2]);
+	glUniform3f(6, colors[3], colors[4], colors[5]);
 
 
 	float vertex[] = {
-	-0.95f, -0.95f, 0.0f, 1.0f, 0.0f, 0.0f,
-	 0.95f, -0.95f, 0.0f, 0.0f, 1.0f, 0.0f,
-	-0.95f,  0.95f, 0.0f, 0.0f, 0.0f, 1.0f,
-	 0.95f, 0.95f, 0.0f, 1.0f, 0.0f, 0.0f
+	-0.95f, -0.95f, 0.0f,
+	 0.95f, -0.95f, 0.0f,
+	-0.95f,  0.95f, 0.0f,
+	 0.95f, 0.95f, 0.0f
 	};
 
 	glGenVertexArrays(1, &VAO);
@@ -147,8 +140,6 @@ bool ModuleRenderExercise::Init()
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(sizeof(float) * 3));
-	glEnableVertexAttribArray(1);
 
 	unsigned int indices[6] = { 0,1,2,3,2,1 };
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
@@ -159,6 +150,53 @@ bool ModuleRenderExercise::Init()
 
 update_status ModuleRenderExercise::Update()
 {
+	static bool window = true;
+	ImGui::Begin("Mandelbrot ui window", &window);
+	if (ImGui::InputDouble("CenterX", &centerX, stepCenter))
+	{
+		glUseProgram(programId);
+		glUniform2d(4, centerX, centerY);
+		stepCenter = 0.01 * cLength;
+	}
+	if (ImGui::InputDouble("CenterY", &centerY, stepCenter))
+	{
+		glUseProgram(programId);
+		glUniform2d(4, centerX, centerY);
+		stepCenter = 0.01 * cLength;
+	}
+	if (ImGui::InputDouble("CLength", &cLength, 0.1))
+	{
+		glUseProgram(programId);
+		glUniform1d(3,cLength);
+		if (cLength > prevCLength)
+			cLength = (cLength - 0.1) * 0.99;
+		else
+			cLength = (cLength + 0.1) * 1.01;
+		prevCLength = cLength;
+	}
+	if (ImGui::DragInt("MaxIterations", (int*)&unis.maxIterations))
+	{
+		glUseProgram(programId);
+		glUniform1ui(0, unis.maxIterations);
+	}
+	if (ImGui::DragInt("ColorPeriod", (int*)&unis.colorPeriod))
+	{
+		glUseProgram(programId);
+		glUniform1ui(1, unis.colorPeriod);
+	}
+	if (ImGui::ColorPicker3("Color 1", colors))
+	{
+		glUseProgram(programId);
+		glUniform3f(5, colors[0], colors[1], colors[2]);
+	}
+	if (ImGui::ColorPicker3("Color 2", &colors[3]))
+	{
+		glUseProgram(programId);
+		glUniform3f(6, colors[3], colors[4], colors[5]);
+	}
+	//App->GetWindow()->GetWindowSize(&w, &h);
+	//glUniform2i(2, w, h);
+	ImGui::End();
 	glBindVertexArray(VAO);
 	glUseProgram(programId);
 	//glDrawArrays(GL_TRIANGLES, 0, 6);

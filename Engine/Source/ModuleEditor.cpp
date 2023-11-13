@@ -81,9 +81,11 @@ update_status ModuleEditor::PreUpdate()
 // Called every draw update
 update_status ModuleEditor::Update()
 {
+#ifdef DEBUG
     static bool a = true;
-    if(a)
+    if (a)
         ImGui::ShowDemoWindow(&a);
+#endif // DEBUG
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
