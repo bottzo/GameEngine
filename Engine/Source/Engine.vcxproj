@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Files.cpp" />
     <ClCompile Include="ImGui\src\imgui.cpp" />
     <ClCompile Include="ImGui\src\imgui_demo.cpp" />
     <ClCompile Include="ImGui\src\imgui_draw.cpp" />
@@ -195,11 +196,13 @@
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
     <ClCompile Include="ModuleOpenGL.cpp" />
-    <ClCompile Include="ModuleRederExercise.cpp" />
+    <ClCompile Include="ModuleRenderExercise.cpp" />
+    <ClCompile Include="ModuleRenderMandelbrot.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Files.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
     <ClInclude Include="MathGeoLib\include\Geometry\AABB.h" />
@@ -266,6 +269,7 @@
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleOpenGL.h" />
     <ClInclude Include="ModuleRenderExercise.h" />
+    <ClInclude Include="ModuleRenderMandelbrot.h" />
     <ClInclude Include="ModuleWindow.h" />
   </ItemGroup>
   <ItemGroup>

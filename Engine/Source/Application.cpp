@@ -4,15 +4,17 @@
 #include "ModuleOpenGL.h"
 #include "ModuleInput.h"
 #include "ModuleEditor.h"
+#include "ModuleRenderMandelbrot.h"
 #include "ModuleRenderExercise.h"
 
 Application::Application()
 {
-	modules.reserve(4);
+	modules.reserve(6);
 	// Order matters: they will Init/start/update in this order
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(window = new ModuleWindow());
 	modules.push_back(render = new ModuleOpenGL());
+	//modules.push_back(mandelbrot = new ModuleRenderMandelbrot());
 	modules.push_back(exercise = new ModuleRenderExercise());
 	modules.push_back(editor = new ModuleEditor());
 }

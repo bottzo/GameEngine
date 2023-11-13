@@ -29,7 +29,6 @@
       <Filter>Deps\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="ModuleEditor.cpp" />
-    <ClCompile Include="ModuleRederExercise.cpp" />
     <ClCompile Include="MathGeoLib\include\Algorithm\Random\LCG.cpp">
       <Filter>Deps\MathGeolib\Algorithm\Random</Filter>
     </ClCompile>
@@ -126,6 +125,9 @@
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp">
       <Filter>Deps\MathGeolib\Time</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleRenderExercise.cpp" />
+    <ClCompile Include="ModuleRenderMandelbrot.cpp" />
+    <ClCompile Include="Files.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -135,7 +137,6 @@
     <ClInclude Include="ModuleOpenGL.h" />
     <ClInclude Include="ModuleWindow.h" />
     <ClInclude Include="ModuleEditor.h" />
-    <ClInclude Include="ModuleRenderExercise.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h">
       <Filter>Deps\MathGeolib\Algorithm\Random</Filter>
     </ClInclude>
@@ -316,6 +317,9 @@
     <ClInclude Include="MathGeoLib\include\MathGeoLibFwd.h">
       <Filter>Deps\MathGeolib</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleRenderExercise.h" />
+    <ClInclude Include="ModuleRenderMandelbrot.h" />
+    <ClInclude Include="Files.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

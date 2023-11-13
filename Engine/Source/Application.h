@@ -10,6 +10,7 @@ class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
 class ModuleEditor;
+class ModuleRenderMandelbrot;
 class ModuleRenderExercise;
 
 class Application
@@ -27,7 +28,8 @@ public:
     ModuleWindow* GetWindow() { return window; }
     ModuleInput*  GetInput() { return input; }
     ModuleEditor*  GetEditor() { return editor; }
-    ModuleRenderExercise*  GetExercice() { return exercise; }
+    ModuleRenderMandelbrot*  GetMandelbrot() { return mandelbrot; }
+    ModuleRenderExercise*  GetExercise() { return exercise; }
 
 private:
 
@@ -35,6 +37,7 @@ private:
     ModuleWindow* window = nullptr;
     ModuleInput* input = nullptr;
     ModuleEditor* editor = nullptr;
+    ModuleRenderMandelbrot* mandelbrot = nullptr;
     ModuleRenderExercise* exercise = nullptr;
 
     std::vector<Module*> modules;
