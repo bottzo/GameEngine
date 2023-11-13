@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "ModuleOpenGL.h"
 #include "ModuleWindow.h"
+#include "Application.h"
+#include "ModuleRenderExercise.h"
 #include "SDL.h"
 #include "GL/glew.h"
 
@@ -121,4 +123,5 @@ bool ModuleOpenGL::CleanUp()
 void ModuleOpenGL::WindowResized(unsigned width, unsigned height)
 {
 	glViewport(0, 0, width, height);
+	App->GetExercice()->WindowUniform(width, height);
 }

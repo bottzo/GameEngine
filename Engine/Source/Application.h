@@ -27,6 +27,7 @@ public:
     ModuleWindow* GetWindow() { return window; }
     ModuleInput*  GetInput() { return input; }
     ModuleEditor*  GetEditor() { return editor; }
+    ModuleRenderExercise*  GetExercice() { return exercise; }
 
 private:
 

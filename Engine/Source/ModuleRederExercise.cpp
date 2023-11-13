@@ -212,3 +212,9 @@ bool ModuleRenderExercise::CleanUp()
 	glDeleteBuffers(2, VBOEBO);
 	return true;
 }
+
+void ModuleRenderExercise::WindowUniform(int w, int h)
+{
+	glUseProgram(programId);
+	glUniform2i(2, w, h);
+}

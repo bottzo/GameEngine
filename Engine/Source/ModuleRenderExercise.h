@@ -20,6 +20,8 @@ public:
 	update_status Update() override;
 	bool CleanUp() override;
 
+	void WindowUniform(int width, int height);
+
 private:
 	unsigned int VAO;
 	unsigned int VBOEBO[2];
