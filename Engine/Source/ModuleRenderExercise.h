@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
+#include "Math/float4x4.h"
 
 class ModuleRenderExercise : public Module
 {
@@ -18,6 +19,9 @@ private:
 	unsigned int programId;
 	unsigned int VAO;
 	unsigned int VBOEBO[2];
+
+	float4x4 view;
+	float4x4 proj;
 };
 
 #endif // !MODULERENDEREXERCISE

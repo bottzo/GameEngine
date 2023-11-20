@@ -6,6 +6,7 @@
 #include "ModuleEditor.h"
 #include "ModuleRenderMandelbrot.h"
 #include "ModuleRenderExercise.h"
+#include "ModuleDebugDraw.h"
 
 Application::Application()
 {
@@ -15,6 +16,7 @@ Application::Application()
 	modules.push_back(window = new ModuleWindow());
 	modules.push_back(render = new ModuleOpenGL());
 	//modules.push_back(mandelbrot = new ModuleRenderMandelbrot());
+	modules.push_back(debugDraw = new ModuleDebugDraw());
 	modules.push_back(exercise = new ModuleRenderExercise());
 	modules.push_back(editor = new ModuleEditor());
 }

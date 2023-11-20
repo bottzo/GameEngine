@@ -5,6 +5,7 @@
 #include "ModuleWindow.h"
 #include "Geometry/Frustum.h"
 #include "Math/MathAll.h"
+#include "ModuleDebugDraw.h"
 
 ModuleRenderExercise::ModuleRenderExercise() 
 {
@@ -44,11 +45,11 @@ bool ModuleRenderExercise::Init()
 	App->GetWindow()->GetWindowSize(&w, &h);
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w/(float)h);
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),float4x4::RotateZ(pi / 4.0f),float3(1.0f, 1.0f, 1.0f));
-	float4x4 view = LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+	view = LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
 	if (!view.Inverse())
 		LOG("AAAAAAAAAA");
 	//float4x4 view = frustum.ViewMatrix();
-	float4x4 proj = frustum.ProjectionMatrix();
+	proj = frustum.ProjectionMatrix();
 
 	glUniformMatrix4fv(0, 1, GL_TRUE, model.ptr());
 	glUniformMatrix4fv(1, 1, GL_TRUE, view.ptr());
@@ -84,6 +85,9 @@ update_status ModuleRenderExercise::Update()
 	glUseProgram(programId);
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	int w, h;
+	App->GetWindow()->GetWindowSize(&w, &h);
+	App->GetDebugDraw()->Draw(view, proj, w, h);
 	glUseProgram(0);
 	glBindVertexArray(0);
 	return UPDATE_CONTINUE;
