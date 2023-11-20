@@ -15,10 +15,13 @@ ModuleRenderExercise::~ModuleRenderExercise()
 }
 
 float4x4 LookAt(float3 eyePos, float3 targetPos, float3 upVector) {
-	float3 forward = targetPos - eyePos;
+	float3 forward = (targetPos - eyePos);
 	forward.Normalize();
 	float3 right = math::Cross(forward, upVector);
-	forward = 
+	right.Normalize();
+	float3 up = math::Cross(right, forward);
+	up.Normalize();
+	return { right.x, up.x, forward.x, 0.0f, right.y, up.y, -forward.y, 0.0f, right.z, up.z, -forward.z, eyePos.x, eyePos.y, eyePos.z, 0.0f, 1.0f };
 }
 
 bool ModuleRenderExercise::Init()
@@ -41,9 +44,9 @@ bool ModuleRenderExercise::Init()
 	App->GetWindow()->GetWindowSize(&w, &h);
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w/(float)h);
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),float4x4::RotateZ(pi / 4.0f),float3(2.0f, 1.0f, 1.0f));
-	float4x4 view = LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+	//float4x4 view = LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+	float4x4 view = frustum.ViewMatrix();
 	float4x4 proj = frustum.ProjectionMatrix();
-
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f,
