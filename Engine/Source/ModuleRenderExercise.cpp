@@ -6,6 +6,7 @@
 #include "Geometry/Frustum.h"
 #include "Math/MathAll.h"
 #include "ModuleDebugDraw.h"
+#include "ModuleTextures.h"
 
 ModuleRenderExercise::ModuleRenderExercise() 
 {
@@ -75,6 +76,8 @@ bool ModuleRenderExercise::Init()
 	unsigned int indices[6] = { 0,1,2,3,2,1 };
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	App->GetTextures()->LoadTexture("Test-image-Baboon.tga");
 
 	return true;
 }

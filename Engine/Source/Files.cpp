@@ -7,12 +7,12 @@
 #include <stdio.h>
 
 //TODO: on poso aquesta funcio!!!
-bool FileToBuffer(const char* filePath, char** buffer)
+long FileToBuffer(const char* filePath, char** buffer)
 {
 	//Note: necesito posar tambe el mode de obrir el file??
 	FILE* file = fopen(filePath, "rb");
 	if (file == NULL)
-		return false;
+		return 0;
 	fseek(file, 0, SEEK_END);
 	long size = ftell(file);
 	*buffer = (char*)malloc(size + 1);
@@ -20,7 +20,7 @@ bool FileToBuffer(const char* filePath, char** buffer)
 	fread(*buffer, 1, size, file);
 	(*buffer)[size] = '\0';
 	fclose(file);
-	return true;
+	return size;
 }
 
 //TODO: on poso aquesta funcio

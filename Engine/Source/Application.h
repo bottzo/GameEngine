@@ -13,6 +13,7 @@ class ModuleEditor;
 class ModuleRenderMandelbrot;
 class ModuleRenderExercise;
 class ModuleDebugDraw;
+class ModuleTextures;
 
 class Application
 {
@@ -32,6 +33,7 @@ public:
     ModuleRenderMandelbrot*  GetMandelbrot() { return mandelbrot; }
     ModuleRenderExercise*  GetExercise() { return exercise; }
     ModuleDebugDraw*  GetDebugDraw() { return debugDraw; }
+    ModuleTextures*  GetTextures() { return textures; }
 
 private:
 
@@ -42,6 +44,7 @@ private:
     ModuleRenderMandelbrot* mandelbrot = nullptr;
     ModuleRenderExercise* exercise = nullptr;
     ModuleDebugDraw* debugDraw = nullptr;
+    ModuleTextures* textures = nullptr;
 
     std::vector<Module*> modules;
 
