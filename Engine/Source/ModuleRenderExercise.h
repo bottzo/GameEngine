@@ -20,9 +20,6 @@ private:
 	unsigned int VAO;
 	unsigned int VBOEBO[2];
 
-	float4x4 view;
-	float4x4 proj;
-
 	unsigned int baboonTex;
 };
 

@@ -132,6 +132,7 @@
       <Filter>DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="ModuleTextures.cpp" />
+    <ClCompile Include="ModuleEditorCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -334,6 +335,7 @@
       <Filter>DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="ModuleTextures.h" />
+    <ClInclude Include="ModuleEditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

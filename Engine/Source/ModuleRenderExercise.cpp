@@ -7,6 +7,7 @@
 #include "Math/MathAll.h"
 #include "ModuleDebugDraw.h"
 #include "ModuleTextures.h"
+#include "ModuleEditorCamera.h"
 
 ModuleRenderExercise::ModuleRenderExercise() 
 {
@@ -34,27 +35,10 @@ bool ModuleRenderExercise::Init()
 		return false;
 	glUseProgram(programId);
 	//uniforms
-	Frustum frustum;
-	frustum.type = FrustumType::PerspectiveFrustum;
-	frustum.pos = float3::zero;
-	frustum.front = -float3::unitZ;
-	frustum.up = float3::unitY;
-	frustum.nearPlaneDistance = 0.1f;
-	frustum.farPlaneDistance = 100.0f;
-	frustum.verticalFov = math::pi / 4.0f;
-	int w, h;
-	App->GetWindow()->GetWindowSize(&w, &h);
-	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w/(float)h);
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),float4x4::RotateZ(pi / 4.0f),float3(1.0f, 1.0f, 1.0f));
-	view = LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
-	if (!view.Inverse())
-		LOG("AAAAAAAAAA");
-	//float4x4 view = frustum.ViewMatrix();
-	proj = frustum.ProjectionMatrix();
-
 	glUniformMatrix4fv(0, 1, GL_TRUE, model.ptr());
-	glUniformMatrix4fv(1, 1, GL_TRUE, view.ptr());
-	glUniformMatrix4fv(2, 1, GL_TRUE, proj.ptr());
+	glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
+	glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 
@@ -83,7 +67,7 @@ bool ModuleRenderExercise::Init()
 	baboonTex = App->GetTextures()->LoadTexture("Test-image-Baboon.tga");
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, baboonTex);
-	glUseProgram(programId);
+	//glUseProgram(programId);
 	glUniform1i(3, 1);
 
 	return true;
@@ -98,7 +82,7 @@ update_status ModuleRenderExercise::Update()
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	int w, h;
 	App->GetWindow()->GetWindowSize(&w, &h);
-	App->GetDebugDraw()->Draw(view, proj, w, h);
+	App->GetDebugDraw()->Draw(App->GetEditorCamera()->GetViewMatrix(), App->GetEditorCamera()->GetProjectionMatrix(), w, h);
 	glUseProgram(0);
 	glBindVertexArray(0);
 	return UPDATE_CONTINUE;
