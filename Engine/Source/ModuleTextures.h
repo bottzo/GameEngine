@@ -5,7 +5,7 @@
 
 class ModuleTextures : public Module {
 public:
-	void* LoadTexture(const char* path);
+	unsigned int LoadTexture(const char* path);
 };
 
 #endif //MODULETEXTURES

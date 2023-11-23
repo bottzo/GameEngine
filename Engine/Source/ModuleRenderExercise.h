@@ -22,6 +22,8 @@ private:
 
 	float4x4 view;
 	float4x4 proj;
+
+	unsigned int baboonTex;
 };
 
 #endif // !MODULERENDEREXERCISE
