@@ -27,7 +27,8 @@ update_status ModuleEditorCamera::Update()
 	//{
 	//	return (keyboard[id] == state);
 	//}
-	if(App->input->GetKey(SDL_SCANCODE_A) == KeyState::KEY_REPEAT)
+	if (App->GetInput()->GetKey(SDL_SCANCODE_A) == KeyState::KEY_REPEAT)
+		LOG("AAAAAA!!!!");
 	return UPDATE_CONTINUE;
 }
 

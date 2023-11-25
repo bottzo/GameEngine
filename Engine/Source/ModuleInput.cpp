@@ -6,11 +6,18 @@
 #include "imgui_impl_sdl2.h"
 
 ModuleInput::ModuleInput()
-{}
+{
+    //TODO: allocated to much memory??
+    //How do I make a callback system with inputs to not have to poll for them on every frame??
+    keyboard = new KeyState[SDL_NUM_SCANCODES];
+    memset(keyboard, 0, SDL_NUM_SCANCODES);
+}
 
 // Destructor
 ModuleInput::~ModuleInput()
-{}
+{
+    delete[] keyboard;
+}
 
 // Called before render is available
 bool ModuleInput::Init()
@@ -51,8 +58,45 @@ update_status ModuleInput::Update()
         }
     }
 
-    keyboard = SDL_GetKeyboardState(NULL);
-
+    //keyboard snapshot
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
+    for (int i = 0; i < SDL_NUM_SCANCODES; ++i)
+    {
+        if (keys[i] == SDL_PRESSED)
+        {
+            switch (keyboard[i])
+            {
+                case KeyState::KEY_IDLE:
+                case KeyState::KEY_UP:
+                    keyboard[i] = KeyState::KEY_DOWN;
+                    break;
+                default:
+                    keyboard[i] = KeyState::KEY_REPEAT;
+                    break;
+            }
+            //if (keyboard[i] == KeyState::KEY_IDLE || keyboard[i] == KeyState::KEY_UP)
+            //    keyboard[i] = KeyState::KEY_DOWN;
+            //else if (keyboard[i] == KeyState::KEY_DOWN)
+            //    keyboard[i] = KeyState::KEY_REPEAT;
+        }
+        else
+        {
+            switch (keyboard[i])
+            {
+                case KeyState::KEY_REPEAT:
+                case KeyState::KEY_DOWN:
+                    keyboard[i] = KeyState::KEY_UP;
+                    break;
+                default:
+                    keyboard[i] = KeyState::KEY_IDLE;
+                    break;
+            }
+            //if (keyboard[i] == KeyState::KEY_UP)
+            //    keyboard[i] = KeyState::KEY_IDLE;
+            //else if (keyboard[i] == KeyState::KEY_REPEAT || keyboard[i] == KeyState::KEY_DOWN)
+            //    keyboard[i] = KeyState::KEY_UP;
+        }
+    }
     return UPDATE_CONTINUE;
 }
 
