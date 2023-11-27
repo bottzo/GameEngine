@@ -14,13 +14,10 @@ public:
 	void LookAt(float3 eyePos, float3 targetPos, float3 upVector);
 	void Transform(float3 vec);
 	void Rotate(const float3& axix, float angleRad);
-	const float4x4& GetViewMatrix() const { return view; }
-	const float4x4& GetProjectionMatrix() const { return proj; }
+	float4x4 GetViewMatrix() const { return frustum.ViewMatrix(); }
+	float4x4 GetProjectionMatrix() const { return frustum.ProjectionMatrix(); }
 private:
 	Frustum frustum;
-	float4x4 cameraMatrix;
-	float4x4 view;
-	float4x4 proj;
 };
 
 #endif // !MODULEEDITORCAMERA

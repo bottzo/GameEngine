@@ -32,38 +32,31 @@ update_status ModuleEditorCamera::Update()
 	if (App->GetInput()->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
 		Transform(float3(0.01f, 0, 0));
 	if (App->GetInput()->GetKey(SDL_SCANCODE_UP) == KeyState::KEY_REPEAT)
-		Rotate(float3(cameraMatrix.ptr()[1], cameraMatrix.ptr()[5], cameraMatrix.ptr()[9]), 0.01);
+		Rotate(float3(0, 1, 0), 0.01);
 	if (App->GetInput()->GetKey(SDL_SCANCODE_DOWN) == KeyState::KEY_REPEAT)
-		Rotate(float3(cameraMatrix.ptr()[1], cameraMatrix.ptr()[5], cameraMatrix.ptr()[9]), -0.01);
+		Rotate(float3(0, 1, 0), -0.01);
+	if (App->GetInput()->GetKey(SDL_SCANCODE_RIGHT) == KeyState::KEY_REPEAT)
+		Rotate(float3(1, 0, 0), 0.01);
+	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT) == KeyState::KEY_REPEAT)
+		Rotate(float3(1, 0, 0), -0.01);
 	return UPDATE_CONTINUE;
 }
 
 void ModuleEditorCamera::Rotate(const float3& axis, float angleRad)
 {
-	//cameraMatrix = cameraMatrix.RotateAxisAngle(axis, angleRad);
-	//cameraMatrix = cameraMatrix.Mul(cameraMatrix.RotateAxisAngle(axis, angleRad));
-	//cameraMatrix = cameraMatrix.Mul(cameraMatrix.RotateY(angleRad));
-	view = cameraMatrix;
-	view.Inverse();
-	frustum.front = { -cameraMatrix.ptr()[2], -cameraMatrix.ptr()[6], -cameraMatrix.ptr()[10] };
-	frustum.up = { cameraMatrix.ptr()[1], cameraMatrix.ptr()[5], cameraMatrix.ptr()[9] };
-	proj = frustum.ProjectionMatrix();
+	float3x4 world = frustum.WorldMatrix();
+	frustum.SetWorldMatrix(world.Mul(world.RotateAxisAngle(axis, angleRad)));
 }
 
 void ModuleEditorCamera::Transform(float3 vec)
 {
 	vec.z = -vec.z;
-	float3 newTrans = cameraMatrix.TransformDir(vec);
-	//float3x3 rotation = cameraMatrix;
-	//float3 newTrans = { cameraMatrix.ptr()[3] + vec.x, cameraMatrix.ptr()[7] + vec.y, cameraMatrix.ptr()[11] - vec.z };
-	cameraMatrix.ptr()[3] += newTrans.x;
-	cameraMatrix.ptr()[7] += newTrans.y;
-	cameraMatrix.ptr()[11] += newTrans.z;
-	view = cameraMatrix;
-	view.Inverse();
-	frustum.pos = { cameraMatrix.ptr()[3], cameraMatrix.ptr()[7], cameraMatrix.ptr()[11] };
-	proj = frustum.ProjectionMatrix();
+	float3x4 world = frustum.WorldMatrix();
+	float3 newTrans = world.TransformDir(vec);
+	world.SetTranslatePart(world.TranslatePart() + newTrans);
+	frustum.SetWorldMatrix(world);
 }
+
 
 void ModuleEditorCamera::LookAt(float3 eyePos, float3 targetPos, float3 upVector) {
 	float3 forward = (targetPos - eyePos);
@@ -72,13 +65,9 @@ void ModuleEditorCamera::LookAt(float3 eyePos, float3 targetPos, float3 upVector
 	right.Normalize();
 	float3 up = math::Cross(right, forward);
 	up.Normalize();
-	cameraMatrix = { right.x, up.x, -forward.x, eyePos.x, right.y, up.y, -forward.y, eyePos.y, right.z, up.z, -forward.z, eyePos.z, 0.0f, 0.0f, 0.0f, 1.0f };
-	view = cameraMatrix;
-	view.Inverse();
+	//cameraMatrix = { right.x, up.x, -forward.x, eyePos.x, right.y, up.y, -forward.y, eyePos.y, right.z, up.z, -forward.z, eyePos.z, 0.0f, 0.0f, 0.0f, 1.0f };
 
 	frustum.pos = eyePos;
-	frustum.front = -forward;
+	frustum.front = forward;
 	frustum.up = up;
-
-	proj = frustum.ProjectionMatrix();
 }
