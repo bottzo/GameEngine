@@ -35,6 +35,10 @@ update_status ModuleEditorCamera::Update()
 		Transform(float3(-0.01f, 0, 0));
 	if (App->GetInput()->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
 		Transform(float3(0.01f, 0, 0));
+	if (App->GetInput()->GetKey(SDL_SCANCODE_UP) == KeyState::KEY_REPEAT)
+		Rotate(float3(cameraMatrix.ptr()[1], cameraMatrix.ptr()[5], cameraMatrix.ptr()[9]), 0.0001);
+	if (App->GetInput()->GetKey(SDL_SCANCODE_DOWN) == KeyState::KEY_REPEAT)
+		Rotate(float3(cameraMatrix.ptr()[1], cameraMatrix.ptr()[5], cameraMatrix.ptr()[9]), -0.05);
 	return UPDATE_CONTINUE;
 }
 
@@ -50,6 +54,17 @@ void ModuleEditorCamera::Transform(float3 vec)
 	view = cameraMatrix;
 	view.Inverse();
 	frustum.pos = { cameraMatrix.ptr()[3], cameraMatrix.ptr()[7], cameraMatrix.ptr()[11] };
+	proj = frustum.ProjectionMatrix();
+}
+
+void ModuleEditorCamera::Rotate(const float3& axis, float angleRad)
+{
+	//cameraMatrix = cameraMatrix.RotateAxisAngle(axis, angleRad);
+	cameraMatrix = cameraMatrix.RotateY(angleRad);
+	view = cameraMatrix;
+	view.Inverse();
+	frustum.front = { -cameraMatrix.ptr()[2], -cameraMatrix.ptr()[6], -cameraMatrix.ptr()[10]};
+	frustum.up = { cameraMatrix.ptr()[1], cameraMatrix.ptr()[5], cameraMatrix.ptr()[9] };
 	proj = frustum.ProjectionMatrix();
 }
 

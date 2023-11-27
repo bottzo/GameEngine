@@ -13,6 +13,7 @@ public:
 
 	void LookAt(float3 eyePos, float3 targetPos, float3 upVector);
 	void Transform(float3 vec);
+	void Rotate(const float3& axix, float angleRad);
 	const float4x4& GetViewMatrix() const { return view; }
 	const float4x4& GetProjectionMatrix() const { return proj; }
 private:
