@@ -12,6 +12,7 @@ public:
 	update_status Update() override;
 
 	void LookAt(float3 eyePos, float3 targetPos, float3 upVector);
+	void Transform(float3 vec);
 	const float4x4& GetViewMatrix() const { return view; }
 	const float4x4& GetProjectionMatrix() const { return proj; }
 private:

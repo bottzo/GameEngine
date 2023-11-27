@@ -17,16 +17,6 @@ ModuleRenderExercise::~ModuleRenderExercise()
 {
 }
 
-float4x4 LookAt(float3 eyePos, float3 targetPos, float3 upVector) {
-	float3 forward = (targetPos - eyePos);
-	forward.Normalize();
-	float3 right = math::Cross(forward, upVector);
-	right.Normalize();
-	float3 up = math::Cross(right, forward);
-	up.Normalize();
-	return { right.x, up.x, -forward.x, eyePos.x, right.y, up.y, -forward.y, eyePos.y, right.z, up.z, -forward.z, eyePos.z, 0.0f, 0.0f, 0.0f, 1.0f };
-}
-
 bool ModuleRenderExercise::Init()
 {
 	programId = CreateProgram("Shaders/Vertex.glsl", "Shaders/Fragment.glsl");
@@ -79,6 +69,8 @@ update_status ModuleRenderExercise::Update()
 	glUseProgram(programId);
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
 
+	glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
+	glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	int w, h;
 	App->GetWindow()->GetWindowSize(&w, &h);
