@@ -27,9 +27,12 @@ public:
 	bool CleanUp() override;
 
 	KeyState GetKey(int id) const { return keyboard[id]; };
-
+	void GetMouseMorion(int& x, int& y) const { x = mX; y = mY; }
 private:
 	KeyState* keyboard = NULL;
+	int mX;
+	int mY;
+	unsigned int mouseBitmask;
 };
 
 #endif // !MODULEINPUT

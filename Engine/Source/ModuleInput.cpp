@@ -11,6 +11,7 @@ ModuleInput::ModuleInput()
     //How do I make a callback system with inputs to not have to poll for them on every frame??
     keyboard = new KeyState[SDL_NUM_SCANCODES];
     memset(keyboard, 0, SDL_NUM_SCANCODES);
+    SDL_BUTTON(1);
 }
 
 // Destructor
@@ -97,6 +98,10 @@ update_status ModuleInput::Update()
             //    keyboard[i] = KeyState::KEY_UP;
         }
     }
+
+    //SDL_GetMouseState();
+    mouseBitmask = SDL_GetRelativeMouseState(&mX, &mY);
+    LOG("%d\n", SDL_BUTTON_RMASK);
     return UPDATE_CONTINUE;
 }
 

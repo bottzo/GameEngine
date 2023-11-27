@@ -32,13 +32,18 @@ update_status ModuleEditorCamera::Update()
 	if (App->GetInput()->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
 		Transform(float3(0.01f, 0, 0));
 	if (App->GetInput()->GetKey(SDL_SCANCODE_UP) == KeyState::KEY_REPEAT)
-		Rotate(float3(0, 1, 0), 0.01);
+		Rotate(float3::unitY, 0.01);
 	if (App->GetInput()->GetKey(SDL_SCANCODE_DOWN) == KeyState::KEY_REPEAT)
-		Rotate(float3(0, 1, 0), -0.01);
+		Rotate(float3::unitY, -0.01);
+	//TODO: save the right vector myself??
 	if (App->GetInput()->GetKey(SDL_SCANCODE_RIGHT) == KeyState::KEY_REPEAT)
-		Rotate(float3(1, 0, 0), 0.01);
+		Rotate(frustum.WorldRight(), 0.01);
 	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT) == KeyState::KEY_REPEAT)
-		Rotate(float3(1, 0, 0), -0.01);
+		Rotate(frustum.WorldRight(), -0.01);
+	//int xx, yy;
+	//App->GetInput()->GetMouseMorion(xx, yy);
+	//LOG("%d, %d", xx, yy);
+	
 	return UPDATE_CONTINUE;
 }
 
@@ -65,7 +70,6 @@ void ModuleEditorCamera::LookAt(float3 eyePos, float3 targetPos, float3 upVector
 	right.Normalize();
 	float3 up = math::Cross(right, forward);
 	up.Normalize();
-	//cameraMatrix = { right.x, up.x, -forward.x, eyePos.x, right.y, up.y, -forward.y, eyePos.y, right.z, up.z, -forward.z, eyePos.z, 0.0f, 0.0f, 0.0f, 1.0f };
 
 	frustum.pos = eyePos;
 	frustum.front = forward;

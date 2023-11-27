@@ -20,8 +20,8 @@ Application::Application()
 	modules.push_back(editorCamera = new ModuleEditorCamera());
 	modules.push_back(textures = new ModuleTextures());
 	//modules.push_back(mandelbrot = new ModuleRenderMandelbrot());
-	modules.push_back(debugDraw = new ModuleDebugDraw());
 	modules.push_back(exercise = new ModuleRenderExercise());
+	modules.push_back(debugDraw = new ModuleDebugDraw());
 	modules.push_back(editor = new ModuleEditor());
 }
 

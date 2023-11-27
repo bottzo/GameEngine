@@ -5,7 +5,6 @@
 #include "ModuleWindow.h"
 #include "Geometry/Frustum.h"
 #include "Math/MathAll.h"
-#include "ModuleDebugDraw.h"
 #include "ModuleTextures.h"
 #include "ModuleEditorCamera.h"
 
@@ -71,10 +70,12 @@ update_status ModuleRenderExercise::Update()
 
 	glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
 	glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, baboonTex);
+	//glUniform1i(3, 1);
+
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	int w, h;
-	App->GetWindow()->GetWindowSize(&w, &h);
-	App->GetDebugDraw()->Draw(App->GetEditorCamera()->GetViewMatrix(), App->GetEditorCamera()->GetProjectionMatrix(), w, h);
 	glUseProgram(0);
 	glBindVertexArray(0);
 	return UPDATE_CONTINUE;
