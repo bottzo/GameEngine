@@ -41,8 +41,10 @@ update_status ModuleEditorCamera::Update()
 	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT) == KeyState::KEY_REPEAT)
 		Rotate(frustum.WorldRight(), -0.01);
 	//int xx, yy;
-	//App->GetInput()->GetMouseMorion(xx, yy);
+	//pp->GetInput()->GetMouseMorion(xx, yy);
 	//LOG("%d, %d", xx, yy);
+	if (App->GetInput()->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_DOWN)
+		LOG("REPEATING\n");
 	
 	return UPDATE_CONTINUE;
 }
