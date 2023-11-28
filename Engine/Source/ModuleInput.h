@@ -36,15 +36,14 @@ public:
 	update_status Update() override;
 	bool CleanUp() override;
 
-	KeyState GetKey(int id) const { return keyboard[id]; };
-	KeyState GetMouseKey(MouseButtons id) const { return mouse[id]; };
-	void GetMouseMorion(int& x, int& y) const { x = mX; y = mY; }
+	KeyState GetKey(int id) const { return keyboard[id]; }
+	KeyState GetMouseKey(MouseButtons id) const { return mouse[id]; }
+	void GetMouseMotion(int& x, int& y) const { x = mX; y = mY; }
 private:
 	KeyState mouse[MouseButtons::NUM_MOUSE_BUTTONS] = {};
 	KeyState* keyboard = NULL;
 	int mX;
 	int mY;
-	unsigned int mouseBitmask;
 };
 
 #endif // !MODULEINPUT

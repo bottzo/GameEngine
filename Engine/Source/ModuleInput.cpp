@@ -59,7 +59,7 @@ update_status ModuleInput::Update()
     }
 
     //Mouse snapshot
-    mouseBitmask = SDL_GetRelativeMouseState(&mX, &mY);
+    unsigned int mouseBitmask = SDL_GetRelativeMouseState(&mX, &mY);
     for (int i = 0; i < MouseButtons::NUM_MOUSE_BUTTONS; ++i)
     {
         unsigned int pressed = mouseBitmask & SDL_BUTTON(i+1);

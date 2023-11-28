@@ -19,33 +19,39 @@ bool ModuleEditorCamera::Init()
 
 update_status ModuleEditorCamera::Update()
 {
-	if (App->GetInput()->GetKey(SDL_SCANCODE_Q) == KeyState::KEY_REPEAT)
-		Transform(float3(0, 0.01f, 0));
-	if (App->GetInput()->GetKey(SDL_SCANCODE_E) == KeyState::KEY_REPEAT)
-		Transform(float3(0, -0.01f, 0));
-	if (App->GetInput()->GetKey(SDL_SCANCODE_W) == KeyState::KEY_REPEAT)
-		Transform(float3(0, 0, 0.01f));
-	if (App->GetInput()->GetKey(SDL_SCANCODE_S) == KeyState::KEY_REPEAT)
-		Transform(float3(0, 0, -0.01f));
-	if (App->GetInput()->GetKey(SDL_SCANCODE_A) == KeyState::KEY_REPEAT)
-		Transform(float3(-0.01f, 0, 0));
-	if (App->GetInput()->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
-		Transform(float3(0.01f, 0, 0));
-	if (App->GetInput()->GetKey(SDL_SCANCODE_UP) == KeyState::KEY_REPEAT)
-		Rotate(float3::unitY, 0.01);
-	if (App->GetInput()->GetKey(SDL_SCANCODE_DOWN) == KeyState::KEY_REPEAT)
-		Rotate(float3::unitY, -0.01);
-	//TODO: save the right vector myself??
-	if (App->GetInput()->GetKey(SDL_SCANCODE_RIGHT) == KeyState::KEY_REPEAT)
-		Rotate(frustum.WorldRight(), 0.01);
-	if (App->GetInput()->GetKey(SDL_SCANCODE_LEFT) == KeyState::KEY_REPEAT)
-		Rotate(frustum.WorldRight(), -0.01);
-	//int xx, yy;
-	//pp->GetInput()->GetMouseMorion(xx, yy);
-	//LOG("%d, %d", xx, yy);
-	if (App->GetInput()->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_DOWN)
-		LOG("REPEATING\n");
-	
+	//Fer state machine amb els inputs !!!!
+	//Camera velocity variable independent of framerate
+	//state moving/rot camera
+	if (App->GetInput()->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_REPEAT)
+	{
+		int mX, mY;
+		App->GetInput()->GetMouseMotion(mX, mY);
+		Rotate(float3::unitY, -mX*0.002);
+		//TODO: save the right vector myself??
+		Rotate(frustum.WorldRight(), -mY*0.002);
+		if (App->GetInput()->GetKey(SDL_SCANCODE_Q) == KeyState::KEY_REPEAT)
+			Transform(float3(0, -0.01f, 0));
+		if (App->GetInput()->GetKey(SDL_SCANCODE_E) == KeyState::KEY_REPEAT)
+			Transform(float3(0, 0.01f, 0));
+		if (App->GetInput()->GetKey(SDL_SCANCODE_W) == KeyState::KEY_REPEAT)
+			Transform(float3(0, 0, 0.01f));
+		if (App->GetInput()->GetKey(SDL_SCANCODE_S) == KeyState::KEY_REPEAT)
+			Transform(float3(0, 0, -0.01f));
+		if (App->GetInput()->GetKey(SDL_SCANCODE_A) == KeyState::KEY_REPEAT)
+			Transform(float3(-0.01f, 0, 0));
+		if (App->GetInput()->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
+			Transform(float3(0.01f, 0, 0));
+	}
+	//state paning camera
+	if (App->GetInput()->GetMouseKey(MouseButtons::BUTTON_MIDDLE) == KeyState::KEY_REPEAT)
+	{
+		int mX, mY;
+		App->GetInput()->GetMouseMotion(mX, mY);
+		Transform(float3(-mX * 0.01f, 0, 0));
+		Transform(float3(0, mY * 0.01f, 0));
+	}
+	//state orbiting camera
+
 	return UPDATE_CONTINUE;
 }
 
