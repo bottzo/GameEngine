@@ -7,6 +7,7 @@
 #include "Math/MathAll.h"
 #include "ModuleTextures.h"
 #include "ModuleEditorCamera.h"
+#include "Files.h"
 
 ModuleRenderExercise::ModuleRenderExercise() 
 {
@@ -58,6 +59,8 @@ bool ModuleRenderExercise::Init()
 	glBindTexture(GL_TEXTURE_2D, baboonTex);
 	//glUseProgram(programId);
 	glUniform1i(3, 1);
+
+	LoadGLTFModel("BakerHouse/BakerHouse.gltf");
 
 	return true;
 }

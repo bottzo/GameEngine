@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)MathGeoLib\include;.\SDL\include;$(ProjectDir)Glew\include;$(ProjectDir)ImGui\Include;$(ProjectDir)DirectXTex-oct2023\DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)MathGeoLib\include;.\SDL\include;$(ProjectDir)Glew\include;$(ProjectDir)ImGui\Include;$(ProjectDir)DirectXTex-oct2023\DirectXTex;$(ProjectDir)tinygltf-2.8.18\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)MathGeoLib\include;.\SDL\include;$(ProjectDir)Glew\include;$(ProjectDir)ImGui\Include;$(ProjectDir)DirectXTex-oct2023\DirectXTex</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)MathGeoLib\include;.\SDL\include;$(ProjectDir)Glew\include;$(ProjectDir)ImGui\Include;$(ProjectDir)DirectXTex-oct2023\DirectXTex;$(ProjectDir)tinygltf-2.8.18\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
