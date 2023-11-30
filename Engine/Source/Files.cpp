@@ -5,6 +5,7 @@
 #include "GL/glew.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "Files.h"
 
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #define TINYGLTF_NO_STB_IMAGE
@@ -126,66 +127,138 @@ unsigned int SizeFromGlType(int glDefineType)
 	return 0;
 }
 
-#define NUM_ATTRIBUTES 3
-class Mesh {
-	unsigned int VBOEBO[2];
-	unsigned int materialIdx;
-
-	void LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor** accessors, const unsigned int numAccessors, char* ptr) {
-		const tinygltf::BufferView* bufferViews[NUM_ATTRIBUTES];
-		const tinygltf::Buffer* buffers[NUM_ATTRIBUTES];
-		unsigned int ptrSize = 0;
-		for (int i = 0; i < numAccessors; ++i)
-		{
-			bufferViews[i] = &model.bufferViews[accessors[i]->bufferView];
-			buffers[i] = &model.buffers[bufferViews[i]->buffer];
-			ptrSize += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
-		}
-
-		unsigned int accessorIdxs[NUM_ATTRIBUTES] = {};
-		for (unsigned int i = 0; i < ptrSize;)
-		{
-			for (unsigned int j = 0; j < numAccessors; ++j)
-			{
-				unsigned int offset = bufferViews[j]->byteOffset + accessors[j]->byteOffset;
-				const unsigned int elementSize = SizeFromGlType(accessors[j]->componentType);
-				const unsigned int attribElements = accessors[j]->minValues.size();
-				const unsigned int sizeToCopy = attribElements * elementSize;
-				memcpy(&ptr[i], &buffers[j]->data[accessorIdxs[j] + offset], sizeToCopy);
-				accessorIdxs[j] += sizeToCopy;
-				i += sizeToCopy;
-			}
-
-		}
-	}
-
-public:
-	void Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
+unsigned int TinyGltfAttributNumElements(int tinyDefineType)
+{
+	switch (tinyDefineType)
 	{
-		unsigned int numAccessors = 0;
-		const tinygltf::Accessor* accessors[NUM_ATTRIBUTES];
-		const std::map<std::string,int>::const_iterator posIt = primitive.attributes.find("POSITION");
-		if (posIt != primitive.attributes.end())
-			accessors[numAccessors++] = &model.accessors[posIt->second];
-		const std::map<std::string,int>::const_iterator normIt = primitive.attributes.find("NORMAL");
-		if (normIt != primitive.attributes.end())
-			accessors[numAccessors++] = &model.accessors[normIt->second];
-		const std::map<std::string,int>::const_iterator texCoordIt = primitive.attributes.find("TEXCOORD_0");
-		if (texCoordIt != primitive.attributes.end())
-			accessors[numAccessors++] = &model.accessors[texCoordIt->second];
-		glGenBuffers(2, VBOEBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
-		unsigned int sizeOfData = 0;
-		for (int i = 0; i<numAccessors; ++i)
-			sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
-		glBufferData(GL_ARRAY_BUFFER, sizeOfData, nullptr, GL_STATIC_DRAW);
-		char* ptr = (char*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		LoadBufferData(model, accessors, numAccessors, ptr);
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+	case TINYGLTF_TYPE_SCALAR:
+		return 1;
+	case TINYGLTF_TYPE_VEC2:
+		return 2;
+	case TINYGLTF_TYPE_VEC3:
+		return 3;
+	case TINYGLTF_TYPE_VEC4:
+	case TINYGLTF_TYPE_MAT2:
+		return 4;
+	case TINYGLTF_TYPE_MAT3:
+		return 9;
+	case TINYGLTF_TYPE_MAT4:
+		return 16;
+	default:
+		//case TINYGLTF_TYPE_VECTOR
+		//case TINYGLTF_TYPE_MATRIX
+		LOG("WARNING: Could not identify TinyGtfTypeDefine");
+		assert(false && "WARNING: Could not identify TinyGtfTypeDefine");
 	}
-};
+	return 0;
+}
 
-bool LoadGLTFModel(const char* assetPath)
+//bool StrStartsWith(const char* str, const char* start)
+//{
+//	assert(start != nullptr);
+//	assert(str != nullptr);
+//	while (start != '\0')
+//		if (*start++ != *str++)
+//			return false;
+//	return true;
+//}
+//
+//bool CharIsNum(char character)
+//{
+//	return (character <= '0' && character >= '9');
+//}
+//
+//unsigned int CharToNum(char character)
+//{
+//	return (unsigned int)(character -= '0');
+//}
+//
+//unsigned int AttributNumElements(const char* type)
+//{
+//	if(strcmp(type, "SCALAR") == 0)
+//		return 1;
+//	if (StrStartsWith(type, "VEC"))
+//	{
+//		assert(CharIsNum(type[3]));
+//		return CharToNum(type[3]);
+//	}
+//	if (StrStartsWith(type, "MAT"))
+//	{
+//		assert(CharIsNum(type[3]));
+//		return CharToNum(type[3]) * CharToNum(type[3]);
+//	}
+//	assert(false && "Unknown type");
+//	return 0;
+//}
+
+
+#define NUM_ATTRIBUTES 3
+void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor** accessors, const unsigned int numAccessors, char* ptr) {
+	const tinygltf::BufferView* bufferViews[NUM_ATTRIBUTES];
+	const tinygltf::Buffer* buffers[NUM_ATTRIBUTES];
+	unsigned int ptrSize = 0;
+	for (int i = 0; i < numAccessors; ++i)
+	{
+		bufferViews[i] = &model.bufferViews[accessors[i]->bufferView];
+		buffers[i] = &model.buffers[bufferViews[i]->buffer];
+		ptrSize += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
+	}
+
+	unsigned int accessorIdxs[NUM_ATTRIBUTES] = {};
+	for (unsigned int i = 0; i < ptrSize;)
+	{
+		for (unsigned int j = 0; j < numAccessors; ++j)
+		{
+			unsigned int offset = bufferViews[j]->byteOffset + accessors[j]->byteOffset;
+			const unsigned int elementSize = SizeFromGlType(accessors[j]->componentType);
+			const unsigned int attribElements = TinyGltfAttributNumElements(accessors[j]->type);
+			const unsigned int sizeToCopy = attribElements * elementSize;
+			memcpy(&ptr[i], &buffers[j]->data[accessorIdxs[j] + offset], sizeToCopy);
+			accessorIdxs[j] += sizeToCopy;
+			i += sizeToCopy;
+		}
+
+	}
+}
+
+void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
+{
+	unsigned int numAccessors = 0;
+	const tinygltf::Accessor* accessors[NUM_ATTRIBUTES];
+	const std::map<std::string, int>::const_iterator posIt = primitive.attributes.find("POSITION");
+	if (posIt != primitive.attributes.end())
+		accessors[numAccessors++] = &model.accessors[posIt->second];
+	const std::map<std::string, int>::const_iterator normIt = primitive.attributes.find("NORMAL");
+	if (normIt != primitive.attributes.end())
+		accessors[numAccessors++] = &model.accessors[normIt->second];
+	const std::map<std::string, int>::const_iterator texCoordIt = primitive.attributes.find("TEXCOORD_0");
+	if (texCoordIt != primitive.attributes.end())
+		accessors[numAccessors++] = &model.accessors[texCoordIt->second];
+	glGenBuffers(2, VBOEBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
+	unsigned int sizeOfData = 0;
+	for (int i = 0; i < numAccessors; ++i)
+		sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
+	glBufferData(GL_ARRAY_BUFFER, sizeOfData, nullptr, GL_STATIC_DRAW);
+	char* ptr = (char*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	LoadBufferData(model, accessors, numAccessors, ptr);
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+	const tinygltf::Accessor& idxAccessor = model.accessors[primitive.indices];
+	const tinygltf::BufferView& idxView = model.bufferViews[idxAccessor.bufferView];
+	const tinygltf::Buffer& idxBuffer = model.buffers[idxView.buffer];
+	const unsigned int idxSize = idxAccessor.count * SizeFromGlType(idxAccessor.componentType);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, idxSize, nullptr, GL_STATIC_DRAW);
+	ptr = (char*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+	memcpy(ptr, &idxBuffer.data[idxView.byteOffset], idxSize);
+	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+	const tinygltf::Texture& tex = model.textures[model.materials[primitive.material].pbrMetallicRoughness.baseColorTexture.index];
+	const tinygltf::Image& img = model.images[tex.source];
+}
+
+bool LoadGLTFModel(const char* assetPath, std::vector<Mesh*>& out)
 {
 	tinygltf::TinyGLTF gltfContext;
 	tinygltf::Model model;
@@ -205,6 +278,7 @@ bool LoadGLTFModel(const char* assetPath)
 		{
 			Mesh* myMesh = new Mesh;
 			myMesh->Load(model, mesh, primitive);
+			out.push_back(myMesh);
 		}
 	}
 
