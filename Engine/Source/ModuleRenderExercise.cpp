@@ -54,13 +54,14 @@ bool ModuleRenderExercise::Init()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
-	baboonTex = App->GetTextures()->LoadTexture("Test-image-Baboon.tga");
+	baboonTex = App->GetTextures()->GetTexture("Test-image-Baboon.tga");
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, baboonTex);
 	//glUseProgram(programId);
 	glUniform1i(3, 1);
 
-	LoadGLTFModel("BakerHouse/BakerHouse.gltf");
+	std::vector<Mesh*>meshes;
+	LoadGLTFModel("BakerHouse/BakerHouse.gltf", meshes);
 
 	return true;
 }

@@ -191,7 +191,8 @@ unsigned int TinyGltfAttributNumElements(int tinyDefineType)
 //	return 0;
 //}
 
-
+#include "Application.h"
+#include "ModuleTextures.h"
 #define NUM_ATTRIBUTES 3
 void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor** accessors, const unsigned int numAccessors, char* ptr) {
 	const tinygltf::BufferView* bufferViews[NUM_ATTRIBUTES];
@@ -219,6 +220,11 @@ void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor
 		}
 
 	}
+	for (int i = 0; i < numAccessors; ++i)
+	{
+		glVertexAttribPointer(i, TinyGltfAttributNumElements(accessors[i]->type), accessors[i]->componentType, GL_FALSE, bufferViews[i]->byteStride, (void*)accessors[i]->byteOffset);
+		glEnableVertexAttribArray(i);
+	}
 }
 
 void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
@@ -234,11 +240,13 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	const std::map<std::string, int>::const_iterator texCoordIt = primitive.attributes.find("TEXCOORD_0");
 	if (texCoordIt != primitive.attributes.end())
 		accessors[numAccessors++] = &model.accessors[texCoordIt->second];
-	glGenBuffers(2, VBOEBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
 	unsigned int sizeOfData = 0;
 	for (int i = 0; i < numAccessors; ++i)
 		sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(2, VBOEBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeOfData, nullptr, GL_STATIC_DRAW);
 	char* ptr = (char*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 	LoadBufferData(model, accessors, numAccessors, ptr);
@@ -253,9 +261,37 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	ptr = (char*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
 	memcpy(ptr, &idxBuffer.data[idxView.byteOffset], idxSize);
 	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+	numIndices = idxAccessor.count;
+	indexType = idxAccessor.componentType;
 
 	const tinygltf::Texture& tex = model.textures[model.materials[primitive.material].pbrMetallicRoughness.baseColorTexture.index];
 	const tinygltf::Image& img = model.images[tex.source];
+	texIdx = App->GetTextures()->GetTexture(img.uri.c_str());
+
+	glBindVertexArray(0);
+
+	//programId = CreateProgram("Shaders/Vertex.glsl", "Shaders/Fragment.glsl");
+	//
+	//if (programId == 0)
+	//	return false;
+	//glUseProgram(programId);
+	////uniforms
+	//float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f), float4x4::RotateZ(pi / 4.0f), float3(1.0f, 1.0f, 1.0f));
+	//glUniformMatrix4fv(0, 1, GL_TRUE, model.ptr());
+	//glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
+	//glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
+}
+
+void Mesh::Draw()
+{
+	glBindVertexArray(VAO);
+	if (texIdx != 0)
+	{
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, texIdx);
+		glUniform1i(3, 0);
+	}
+	glDrawElements(GL_TRIANGLES, numIndices, indexType, 0);
 }
 
 bool LoadGLTFModel(const char* assetPath, std::vector<Mesh*>& out)

@@ -73,5 +73,15 @@ unsigned int ModuleTextures::LoadTexture(const char* path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+	textures[path] = texId;
 	return texId;
+}
+
+unsigned int ModuleTextures::GetTexture(const char* path)
+{
+	std::map<const char*, unsigned int>::const_iterator it = textures.find(path);
+	if (it != textures.end())
+		return it->second;
+	else
+		return LoadTexture(path);
 }

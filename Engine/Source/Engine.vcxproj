@@ -284,6 +284,8 @@
     <None Include="..\Game\Shaders\Fragment.glsl" />
     <None Include="..\Game\Shaders\MandelbrotFragment.glsl" />
     <None Include="..\Game\Shaders\MandelbrotVertex.glsl" />
+    <None Include="..\Game\Shaders\MeshFragment.glsl" />
+    <None Include="..\Game\Shaders\MeshVertex.glsl" />
     <None Include="..\Game\Shaders\Vertex.glsl" />
     <None Include="MathGeoLib\include\Geometry\KDTree.inl" />
     <None Include="MathGeoLib\include\Geometry\QuadTree.inl" />

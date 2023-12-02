@@ -400,5 +400,11 @@
     <None Include="MathGeoLib\include\Math\Matrix.inl">
       <Filter>Deps\MathGeolib\Math</Filter>
     </None>
+    <None Include="..\Game\Shaders\MeshFragment.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Game\Shaders\MeshVertex.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
