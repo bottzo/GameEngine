@@ -54,7 +54,7 @@ bool ModuleOpenGL::Init()
 	LOG("Creating Renderer context");
 
 	//TODO: posar el context de opengl amb la window ??
-	context = SDL_GL_CreateContext(App->GetWindow()->window);
+	context = SDL_GL_CreateContext(App->window->window);
 
 	GLenum err = glewInit();
 	// … check for errors
@@ -81,7 +81,7 @@ bool ModuleOpenGL::Init()
 	glFrontFace(GL_CCW); // Front faces will be counter clockwise
 
 	int w, h;
-	App->GetWindow()->GetWindowSize(&w, &h);
+	App->window->GetWindowSize(&w, &h);
 	glViewport(0, 0, w, h);
 
 	return true;
@@ -104,7 +104,7 @@ update_status ModuleOpenGL::Update()
 update_status ModuleOpenGL::PostUpdate()
 {
 	
-	SDL_GL_SwapWindow(App->GetWindow()->window);
+	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }
 
@@ -123,5 +123,4 @@ bool ModuleOpenGL::CleanUp()
 void ModuleOpenGL::WindowResized(unsigned width, unsigned height)
 {
 	glViewport(0, 0, width, height);
-	App->GetMandelbrot()->WindowUniform(width, height);
 }

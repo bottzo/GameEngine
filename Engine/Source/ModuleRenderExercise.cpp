@@ -27,8 +27,8 @@ bool ModuleRenderExercise::Init()
 	//uniforms
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),float4x4::RotateZ(pi / 4.0f),float3(1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(0, 1, GL_TRUE, model.ptr());
-	glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
-	glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
+	glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
+	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 
@@ -54,7 +54,7 @@ bool ModuleRenderExercise::Init()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
-	baboonTex = App->GetTextures()->GetTexture("Test-image-Baboon.tga");
+	baboonTex = App->textures->GetTexture("Test-image-Baboon.tga");
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, baboonTex);
 	//glUseProgram(programId);
@@ -73,8 +73,8 @@ update_status ModuleRenderExercise::Update()
 	glUseProgram(programId);
 	//glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
-	glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
+	glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
+	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, baboonTex);

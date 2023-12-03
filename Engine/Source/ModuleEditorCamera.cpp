@@ -11,7 +11,7 @@ bool ModuleEditorCamera::Init()
 	frustum.farPlaneDistance = 100.0f;
 	frustum.verticalFov = math::pi / 4.0f;
 	int w, h;
-	App->GetWindow()->GetWindowSize(&w, &h);
+	App->window->GetWindowSize(&w, &h);
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w / (float)h);
 	LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
 	return true;
@@ -22,31 +22,31 @@ update_status ModuleEditorCamera::Update()
 	//Fer state machine amb els inputs !!!!
 	//Camera velocity variable independent of framerate
 	//state moving/rot camera
-	if (App->GetInput()->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_REPEAT)
+	if (App->input->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_REPEAT)
 	{
 		int mX, mY;
-		App->GetInput()->GetMouseMotion(mX, mY);
+		App->input->GetMouseMotion(mX, mY);
 		Rotate(float3::unitY, -mX*0.002);
 		//TODO: save the right vector myself??
 		Rotate(frustum.WorldRight(), -mY*0.002);
-		if (App->GetInput()->GetKey(SDL_SCANCODE_Q) == KeyState::KEY_REPEAT)
+		if (App->input->GetKey(SDL_SCANCODE_Q) == KeyState::KEY_REPEAT)
 			Transform(float3(0, -0.01f, 0));
-		if (App->GetInput()->GetKey(SDL_SCANCODE_E) == KeyState::KEY_REPEAT)
+		if (App->input->GetKey(SDL_SCANCODE_E) == KeyState::KEY_REPEAT)
 			Transform(float3(0, 0.01f, 0));
-		if (App->GetInput()->GetKey(SDL_SCANCODE_W) == KeyState::KEY_REPEAT)
+		if (App->input->GetKey(SDL_SCANCODE_W) == KeyState::KEY_REPEAT)
 			Transform(float3(0, 0, 0.01f));
-		if (App->GetInput()->GetKey(SDL_SCANCODE_S) == KeyState::KEY_REPEAT)
+		if (App->input->GetKey(SDL_SCANCODE_S) == KeyState::KEY_REPEAT)
 			Transform(float3(0, 0, -0.01f));
-		if (App->GetInput()->GetKey(SDL_SCANCODE_A) == KeyState::KEY_REPEAT)
+		if (App->input->GetKey(SDL_SCANCODE_A) == KeyState::KEY_REPEAT)
 			Transform(float3(-0.01f, 0, 0));
-		if (App->GetInput()->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
+		if (App->input->GetKey(SDL_SCANCODE_D) == KeyState::KEY_REPEAT)
 			Transform(float3(0.01f, 0, 0));
 	}
 	//state paning camera
-	if (App->GetInput()->GetMouseKey(MouseButtons::BUTTON_MIDDLE) == KeyState::KEY_REPEAT)
+	if (App->input->GetMouseKey(MouseButtons::BUTTON_MIDDLE) == KeyState::KEY_REPEAT)
 	{
 		int mX, mY;
-		App->GetInput()->GetMouseMotion(mX, mY);
+		App->input->GetMouseMotion(mX, mY);
 		Transform(float3(-mX * 0.01f, 0, 0));
 		Transform(float3(0, mY * 0.01f, 0));
 	}

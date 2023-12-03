@@ -24,7 +24,7 @@ bool ModuleRenderMandelbrot::Init()
 	glUniform1ui(0, unis.maxIterations);
 	glUniform1ui(1, unis.colorPeriod);
 	int w, h;
-	App->GetWindow()->GetWindowSize(&w, &h);
+	App->window->GetWindowSize(&w, &h);
 	glUniform2i(2, w, h);
 	glUniform1d(3, cLength);
 	glUniform2d(4, centerX, centerY);

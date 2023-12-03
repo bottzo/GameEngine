@@ -276,7 +276,7 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 
 	const tinygltf::Texture& tex = model.textures[model.materials[primitive.material].pbrMetallicRoughness.baseColorTexture.index];
 	const tinygltf::Image& img = model.images[tex.source];
-	texIdx = App->GetTextures()->GetTexture(img.uri.c_str());
+	texIdx = App->textures->GetTexture(img.uri.c_str());
 
 	glBindVertexArray(0);
 
@@ -299,8 +299,8 @@ void Mesh::Draw()
 		glBindTexture(GL_TEXTURE_2D, texIdx);
 		glUniform1i(3, 0);
 
-		glUniformMatrix4fv(1, 1, GL_TRUE, App->GetEditorCamera()->GetViewMatrix().ptr());
-		glUniformMatrix4fv(2, 1, GL_TRUE, App->GetEditorCamera()->GetProjectionMatrix().ptr());
+		glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
+		glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 	}
 	glDrawElements(GL_TRIANGLES, numIndices, indexType, 0);
 }

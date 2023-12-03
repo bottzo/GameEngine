@@ -44,7 +44,7 @@ bool ModuleEditor::Init()
     }
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL2_InitForOpenGL(App->GetWindow()->window, SDL_GL_GetCurrentContext());
+    ImGui_ImplSDL2_InitForOpenGL(App->window->window, SDL_GL_GetCurrentContext());
     ImGui_ImplOpenGL3_Init("#version 460");
 
     // Load Fonts
