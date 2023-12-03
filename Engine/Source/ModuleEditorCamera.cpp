@@ -57,8 +57,15 @@ update_status ModuleEditorCamera::Update()
 
 void ModuleEditorCamera::Rotate(const float3& axis, float angleRad)
 {
-	float3x4 world = frustum.WorldMatrix();
-	frustum.SetWorldMatrix(world.Mul(world.RotateAxisAngle(axis, angleRad)));
+	//float3x4 world = frustum.WorldMatrix();
+	//frustum.SetWorldMatrix(world.Mul(float3x4::RotateAxisAngle(axis, angleRad)));
+	// 
+	//float3x3 worldRot = world.Float3x3Part();
+	//world.Set3x3Part(worldRot.Mul(float3x3::RotateAxisAngle(axis, angleRad)));
+	//frustum.SetWorldMatrix(world);
+	float3x3 rotationMatrix = float3x3::RotateAxisAngle(axis, angleRad);
+	frustum.up = rotationMatrix.Mul(frustum.up);
+	frustum.front = rotationMatrix.Mul(frustum.front);
 }
 
 void ModuleEditorCamera::Transform(float3 vec)
