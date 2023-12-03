@@ -195,7 +195,7 @@ unsigned int TinyGltfAttributNumElements(int tinyDefineType)
 #include "ModuleTextures.h"
 #include "ModuleEditorCamera.h"
 #include "Math/float4x4.h"
-#define NUM_ATTRIBUTES 2
+#define NUM_ATTRIBUTES 3
 void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor** accessors, const unsigned int numAccessors, char* ptr) {
 	const tinygltf::BufferView* bufferViews[NUM_ATTRIBUTES];
 	const tinygltf::Buffer* buffers[NUM_ATTRIBUTES];
@@ -247,9 +247,9 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	const std::map<std::string, int>::const_iterator texCoordIt = primitive.attributes.find("TEXCOORD_0");
 	if (texCoordIt != primitive.attributes.end())
 		accessors[numAccessors++] = &model.accessors[texCoordIt->second];
-	//const std::map<std::string, int>::const_iterator normIt = primitive.attributes.find("NORMAL");
-	//if (normIt != primitive.attributes.end())
-	//	accessors[numAccessors++] = &model.accessors[normIt->second];
+	const std::map<std::string, int>::const_iterator normIt = primitive.attributes.find("NORMAL");
+	if (normIt != primitive.attributes.end())
+		accessors[numAccessors++] = &model.accessors[normIt->second];
 	unsigned int sizeOfData = 0;
 	for (int i = 0; i < numAccessors; ++i)
 		sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType) * TinyGltfAttributNumElements(accessors[i]->type);
