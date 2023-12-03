@@ -195,20 +195,16 @@ unsigned int TinyGltfAttributNumElements(int tinyDefineType)
 #include "ModuleTextures.h"
 #include "ModuleEditorCamera.h"
 #include "Math/float4x4.h"
-#define NUM_ATTRIBUTES 2
+#define NUM_ATTRIBUTES 3
 void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor** accessors, const unsigned int numAccessors, char* ptr) {
 	const tinygltf::BufferView* bufferViews[NUM_ATTRIBUTES];
 	const tinygltf::Buffer* buffers[NUM_ATTRIBUTES];
 	unsigned int ptrSize = 0;
-	unsigned int VBOByteStride = 0;
 	for (int i = 0; i < numAccessors; ++i)
 	{
 		bufferViews[i] = &model.bufferViews[accessors[i]->bufferView];
 		buffers[i] = &model.buffers[bufferViews[i]->buffer];
-		ptrSize += accessors[i]->count * SizeFromGlType(accessors[i]->componentType) * TinyGltfAttributNumElements(accessors[i]->type);
-		const unsigned int elementSize = SizeFromGlType(accessors[i]->componentType);
-		const unsigned int attribElements = TinyGltfAttributNumElements(accessors[i]->type);
-		VBOByteStride += attribElements * elementSize;
+		ptrSize += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
 	}
 
 	unsigned int accessorIdxs[NUM_ATTRIBUTES] = {};
@@ -226,14 +222,10 @@ void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor
 		}
 
 	}
-	unsigned int attributeOffset = 0;
 	for (int i = 0; i < numAccessors; ++i)
 	{
-		glVertexAttribPointer(i, TinyGltfAttributNumElements(accessors[i]->type), accessors[i]->componentType, GL_FALSE, VBOByteStride, (void*)attributeOffset);
+		glVertexAttribPointer(i, TinyGltfAttributNumElements(accessors[i]->type), accessors[i]->componentType, GL_FALSE, bufferViews[i]->byteStride, (void*)accessors[i]->byteOffset);
 		glEnableVertexAttribArray(i);
-		const unsigned int elementSize = SizeFromGlType(accessors[i]->componentType);
-		const unsigned int attribElements = TinyGltfAttributNumElements(accessors[i]->type);
-		attributeOffset += attribElements * elementSize;
 	}
 }
 
@@ -244,15 +236,15 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	const std::map<std::string, int>::const_iterator posIt = primitive.attributes.find("POSITION");
 	if (posIt != primitive.attributes.end())
 		accessors[numAccessors++] = &model.accessors[posIt->second];
+	const std::map<std::string, int>::const_iterator normIt = primitive.attributes.find("NORMAL");
+	if (normIt != primitive.attributes.end())
+		accessors[numAccessors++] = &model.accessors[normIt->second];
 	const std::map<std::string, int>::const_iterator texCoordIt = primitive.attributes.find("TEXCOORD_0");
 	if (texCoordIt != primitive.attributes.end())
 		accessors[numAccessors++] = &model.accessors[texCoordIt->second];
-	//const std::map<std::string, int>::const_iterator normIt = primitive.attributes.find("NORMAL");
-	//if (normIt != primitive.attributes.end())
-	//	accessors[numAccessors++] = &model.accessors[normIt->second];
 	unsigned int sizeOfData = 0;
 	for (int i = 0; i < numAccessors; ++i)
-		sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType) * TinyGltfAttributNumElements(accessors[i]->type);
+		sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType);
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(2, VBOEBO);
 	glBindVertexArray(VAO);
@@ -285,7 +277,7 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	assert(programId && "Failed to create mesh program");
 	glUseProgram(programId);
 	//uniforms
-	float4x4 modelMat = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f), float4x4::identity, float3(100.0f, 100.0f, 100.0f));
+	float4x4 modelMat = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f), float4x4::identity, float3(1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(0, 1, GL_TRUE, modelMat.ptr());
 }
 

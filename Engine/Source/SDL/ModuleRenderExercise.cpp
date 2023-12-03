@@ -60,9 +60,7 @@ bool ModuleRenderExercise::Init()
 	//glUseProgram(programId);
 	glUniform1i(3, 1);
 
-	//LoadGLTFModel("BakerHouse.gltf", meshes);
 	LoadGLTFModel("BakerHouse.gltf", meshes);
-
 
 	return true;
 }
