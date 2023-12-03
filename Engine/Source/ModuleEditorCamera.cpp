@@ -22,6 +22,8 @@ update_status ModuleEditorCamera::Update()
 	//Fer state machine amb els inputs !!!!
 	//Camera velocity variable independent of framerate
 	//state moving/rot camera
+	if(App->input->GetMouseWheelMotion() != 0)
+		Transform(float3(0, 0, 0.05f* App->input->GetMouseWheelMotion()));
 	if (App->input->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_REPEAT)
 	{
 		int mX, mY;

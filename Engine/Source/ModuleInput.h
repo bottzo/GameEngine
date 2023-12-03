@@ -39,11 +39,13 @@ public:
 	KeyState GetKey(int id) const { return keyboard[id]; }
 	KeyState GetMouseKey(MouseButtons id) const { return mouse[id]; }
 	void GetMouseMotion(int& x, int& y) const { x = mX; y = mY; }
+	int GetMouseWheelMotion() const { return wheelY; }
 private:
 	KeyState mouse[MouseButtons::NUM_MOUSE_BUTTONS] = {};
 	KeyState* keyboard = NULL;
 	int mX;
 	int mY;
+	int wheelY = 0;
 };
 
 #endif // !MODULEINPUT

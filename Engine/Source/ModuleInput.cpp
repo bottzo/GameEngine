@@ -38,6 +38,9 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::Update()
 {
+    //TODO: ugly reset !!
+    if (wheelY != 0)
+        wheelY = 0;
     SDL_Event sdlEvent;
 
     while (SDL_PollEvent(&sdlEvent) != 0)
@@ -54,6 +57,9 @@ update_status ModuleInput::Update()
                     App->render->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
                 if (sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE)
                     return UPDATE_STOP;
+                break;
+            case SDL_MOUSEWHEEL:
+                wheelY = sdlEvent.wheel.y;
                 break;
         }
     }
