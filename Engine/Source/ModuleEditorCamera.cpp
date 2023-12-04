@@ -53,6 +53,16 @@ update_status ModuleEditorCamera::Update()
 		Transform(float3(0, mY * 0.01f, 0));
 	}
 	//state orbiting camera
+	if (App->input->GetMouseKey(MouseButtons::BUTTON_LEFT) == KeyState::KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_LALT) == KeyState::KEY_REPEAT)
+	{
+		float3 right = frustum.WorldRight();
+		float3 focus = frustum.pos; //(cameraPos - targetPos)
+		int mX, mY;
+		App->input->GetMouseMotion(mX, mY);
+		float3x3 rotationMatrix = float3x3::RotateAxisAngle(frustum.up, -mX*0.002f) * float3x3::RotateAxisAngle(right, -mY * 0.002f);
+		focus = rotationMatrix.MulDir(focus);
+		frustum.pos = 
+	}
 
 	return UPDATE_CONTINUE;
 }
