@@ -61,7 +61,8 @@ update_status ModuleEditorCamera::Update()
 		App->input->GetMouseMotion(mX, mY);
 		float3x3 rotationMatrix = float3x3::RotateAxisAngle(frustum.up, -mX*0.002f) * float3x3::RotateAxisAngle(right, -mY * 0.002f);
 		focus = rotationMatrix.MulDir(focus);
-		frustum.pos = 
+		float3 newUp = rotationMatrix.MulDir(frustum.up);
+		LookAt(focus, float3(0, 0, 0), newUp);
 	}
 
 	return UPDATE_CONTINUE;
