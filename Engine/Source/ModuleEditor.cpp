@@ -87,6 +87,12 @@ update_status ModuleEditor::Update()
         ImGui::ShowDemoWindow(&a);
 #endif // DEBUG
 
+    ImGui::Begin("Console");
+    //ImGui::BeginChild("Console Outpupt", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
+    for(std::string log : logs)
+        ImGui::TextUnformatted(log.c_str());
+    ImGui::End();
+    
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -118,4 +124,13 @@ bool ModuleEditor::CleanUp()
     ImGui::DestroyContext();
 
 	return true;
+}
+
+void ModuleEditor::ConsoleLog(const char* log) 
+{
+    std::string newString(log);
+    logSize += newString.size();
+    logs.push_back(log);
+    if (logSize >= LOG_SIZE)
+        logs.pop_front();
 }

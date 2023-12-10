@@ -65,6 +65,9 @@ update_status ModuleEditorCamera::Update()
 		LookAt(focus, float3(0, 0, 0), newUp);
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_A) == KeyState::KEY_DOWN)
+		LOG("AAAAAAA");
+
 	return UPDATE_CONTINUE;
 }
 
