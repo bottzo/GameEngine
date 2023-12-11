@@ -280,12 +280,13 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 
 	glBindVertexArray(0);
 
+	//TODO: evitar crear programa a cada load
 	programId = CreateProgram("Shaders/MeshVertex.glsl", "Shaders/MeshFragment.glsl");
 	
 	assert(programId && "Failed to create mesh program");
 	glUseProgram(programId);
 	//uniforms
-	float4x4 modelMat = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f), float4x4::identity, float3(100.0f, 100.0f, 100.0f));
+	float4x4 modelMat = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f), float4x4::identity, float3(1.0f, 1.0f, 1.0f));
 	glUniformMatrix4fv(0, 1, GL_TRUE, modelMat.ptr());
 }
 

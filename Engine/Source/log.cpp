@@ -19,7 +19,7 @@ void log(const char file[], int line, const char* format, ...)
 	sprintf_s(tmp_string2, LOG_SIZE, "\n%s(%d) : %s", file, line, tmp_string);
 #ifdef _WIN32
 	OutputDebugString(tmp_string2);
-#endif _// WIN32
+#endif //_WIN32
 	if(App != nullptr)
 		App->editor->ConsoleLog(tmp_string2);
 }

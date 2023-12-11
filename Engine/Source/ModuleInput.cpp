@@ -4,6 +4,7 @@
 #include "ModuleOpenGL.h"
 #include "SDL/include/SDL.h"
 #include "imgui_impl_sdl2.h"
+#include "ModuleRenderExercise.h"
 
 ModuleInput::ModuleInput()
 {
@@ -60,6 +61,10 @@ update_status ModuleInput::Update()
                 break;
             case SDL_MOUSEWHEEL:
                 wheelY = sdlEvent.wheel.y;
+                break;
+            case SDL_DROPFILE:
+                App->exercise->LoadModel(sdlEvent.drop.file);
+                SDL_free(sdlEvent.drop.file);
                 break;
         }
     }

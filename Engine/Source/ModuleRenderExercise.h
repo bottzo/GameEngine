@@ -18,6 +18,8 @@ public:
 	update_status Update() override;
 	bool CleanUp() override;
 
+	void LoadModel(const char* path);
+
 private:
 	unsigned int programId;
 	unsigned int VAO;

@@ -61,7 +61,6 @@ bool ModuleRenderExercise::Init()
 	glUniform1i(3, 1);
 
 	//LoadGLTFModel("BakerHouse.gltf", meshes);
-	LoadGLTFModel("BakerHouse.gltf", meshes);
 
 
 	return true;
@@ -96,4 +95,10 @@ bool ModuleRenderExercise::CleanUp()
 	glDeleteBuffers(2, VBOEBO);
 	glDeleteTextures(1, &baboonTex);
 	return true;
+}
+
+void ModuleRenderExercise::LoadModel(const char* path)
+{
+	LOG("Loading model %s", path);
+	LoadGLTFModel(path, meshes);
 }
