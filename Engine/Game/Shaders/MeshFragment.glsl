@@ -1,12 +1,34 @@
 #version 460 core
 
-in vec2 uv;
-in vec3 normals;
-out vec4 fragColor;
+in vec3 oNorm;
+in vec2 oUv;
+in vec3 surfacePos;
 
-layout(location = 3) uniform sampler2D theTexture;
+layout (location = 3) uniform sampler2D theSampler;
 
-void main(){
-	//fragColor = texture2D(theTexture, uv) * vec4(normals,1.0);
-	fragColor = texture2D(theTexture, uv);
+layout (location = 4)uniform vec3 lightDir;
+layout (location = 5)uniform vec3 lightCol;
+layout (location = 6)uniform vec3 ambientCol;
+layout (location = 7)uniform vec3 cameraPos;
+layout (location = 8)uniform float kD;
+
+out vec4 fragCol;
+
+void main()
+{
+	vec3 N = normalize(oNorm);
+	vec3 L = normalize(lightDir);
+	vec3 D = texture(theSampler, oUv).xyz;
+	
+	if(dot(N,L) > 0.0)
+	{
+		vec3 V = normalize(surfacePos - cameraPos);
+		vec3 R = normalize(reflect(L, N));
+		
+		float diffuse = dot(N,L);
+		float specular = pow(dot(R,V),250);
+		fragCol = vec4(ambientCol * D + kD * diffuse * D * lightCol + specular * lightCol * (1 - kD), 1);
+	}
+	else
+		fragCol = vec4(ambientCol * D, 1);
 }

@@ -281,13 +281,20 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	glBindVertexArray(0);
 
 	//TODO: evitar crear programa a cada load
+	//Com pasar els uniforms per a cada prorama?
+	//Unifrom buffer per lighting
 	programId = CreateProgram("Shaders/MeshVertex.glsl", "Shaders/MeshFragment.glsl");
 	
 	assert(programId && "Failed to create mesh program");
 	glUseProgram(programId);
 	//uniforms
-	float4x4 modelMat = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f), float4x4::identity, float3(1.0f, 1.0f, 1.0f));
+	float4x4 modelMat = float4x4::FromTRS(float3(0.0f, 0.0f, 0.0f), float4x4::identity, float3(100.0f, 100.0f, 100.0f));
 	glUniformMatrix4fv(0, 1, GL_TRUE, modelMat.ptr());
+	glUniform3f(4, 0.5f, 0.5f, 0.7f);
+	glUniform3f(5, 1.f, 1.f, 1.f);
+	glUniform3f(6, 0.3f, 0.4f, 0.6f);
+	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
+	glUniform1f(8, 0.3f);
 }
 
 void Mesh::Draw()
