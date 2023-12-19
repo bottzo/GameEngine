@@ -17,18 +17,12 @@ out vec4 fragCol;
 void main()
 {
 	vec3 N = normalize(oNorm);
-	vec3 L = normalize(lightDir);
+	vec3 L = -normalize(lightDir);
 	vec3 D = texture(theSampler, oUv).xyz;
 	
-	if(dot(N,L) > 0.0)
-	{
-		vec3 V = normalize(surfacePos - cameraPos);
-		vec3 R = normalize(reflect(L, N));
-		
-		float diffuse = dot(N,L);
-		float specular = pow(dot(R,V),250);
-		fragCol = vec4(ambientCol * D + kD * diffuse * D * lightCol + specular * lightCol * (1 - kD), 1);
-	}
-	else
-		fragCol = vec4(ambientCol * D, 1);
+	float diffuse = max(dot(N,L),0.0);
+	vec3 V = normalize(surfacePos - cameraPos);
+	vec3 R = normalize(reflect(L, N));
+	float specular = pow(max(dot(R,V), 0.0),20);
+	fragCol = vec4(ambientCol * D + kD * diffuse * D * lightCol + specular * lightCol * (1 - kD), 1);
 }
