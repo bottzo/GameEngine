@@ -191,16 +191,43 @@ unsigned int TinyGltfAttributNumElements(int tinyDefineType)
 //	return 0;
 //}
 
+#include "MikkTSpace/mikktspace.h"
+void Mesh::GenerateTangents()
+{
+	const unsigned int indexSize = SizeFromGlType(indexType);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
+	const char* indices = (const char*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_READ_ONLY);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
+	const char * vertices = (const char*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+	char* unweldedVertices = (char*)malloc(numIndices * vertexSize);
+	for (int i = 0; i < numIndices; ++i)
+	{
+		unsigned long long vertexIdx;
+		memcpy(&vertexIdx, &indices[i * indexSize], indexSize);
+		memcpy(&unweldedVertices[i * vertexSize], &vertices[vertexIdx], indexSize);
+	}
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+	SMikkTSpaceContext tangContext = {};
+	tangContext.m_pUserData = unweldedVertices;
+	if (genTangSpaceDefault(&tangContext))
+	{
+		LOG("OKOKOKOK");
+	}
+}
+
 #include "Application.h"
 #include "ModuleTextures.h"
 #include "ModuleEditorCamera.h"
 #include "Math/float4x4.h"
-#define NUM_ATTRIBUTES 3
+static const char* primitivesToFind[] = { "POSITION", "TEXCOORD_0", "NORMAL" };
+#define MAX_PRIMITIVES sizeof(primitivesToFind) / sizeof(*primitivesToFind)
 void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor** accessors, const unsigned int numAccessors, char* ptr) {
-	const tinygltf::BufferView* bufferViews[NUM_ATTRIBUTES];
-	const tinygltf::Buffer* buffers[NUM_ATTRIBUTES];
+	const tinygltf::BufferView* bufferViews[MAX_PRIMITIVES];
+	const tinygltf::Buffer* buffers[MAX_PRIMITIVES];
 	unsigned int ptrSize = 0;
-	unsigned int VBOByteStride = 0;
+	vertexSize = 0;
 	for (int i = 0; i < numAccessors; ++i)
 	{
 		bufferViews[i] = &model.bufferViews[accessors[i]->bufferView];
@@ -208,10 +235,10 @@ void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor
 		ptrSize += accessors[i]->count * SizeFromGlType(accessors[i]->componentType) * TinyGltfAttributNumElements(accessors[i]->type);
 		const unsigned int elementSize = SizeFromGlType(accessors[i]->componentType);
 		const unsigned int attribElements = TinyGltfAttributNumElements(accessors[i]->type);
-		VBOByteStride += attribElements * elementSize;
+		vertexSize += attribElements * elementSize;
 	}
 
-	unsigned int accessorIdxs[NUM_ATTRIBUTES] = {};
+	unsigned int accessorIdxs[MAX_PRIMITIVES] = {};
 	for (unsigned int i = 0; i < ptrSize;)
 	{
 		for (unsigned int j = 0; j < numAccessors; ++j)
@@ -229,27 +256,26 @@ void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor
 	unsigned int attributeOffset = 0;
 	for (int i = 0; i < numAccessors; ++i)
 	{
-		glVertexAttribPointer(i, TinyGltfAttributNumElements(accessors[i]->type), accessors[i]->componentType, GL_FALSE, VBOByteStride, (void*)attributeOffset);
+		glVertexAttribPointer(i, TinyGltfAttributNumElements(accessors[i]->type), accessors[i]->componentType, GL_FALSE, vertexSize, (void*)attributeOffset);
 		glEnableVertexAttribArray(i);
 		const unsigned int elementSize = SizeFromGlType(accessors[i]->componentType);
 		const unsigned int attribElements = TinyGltfAttributNumElements(accessors[i]->type);
 		attributeOffset += attribElements * elementSize;
 	}
+
+	GenerateTangents();
 }
 
 void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
 {
 	unsigned int numAccessors = 0;
-	const tinygltf::Accessor* accessors[NUM_ATTRIBUTES];
-	const std::map<std::string, int>::const_iterator posIt = primitive.attributes.find("POSITION");
-	if (posIt != primitive.attributes.end())
-		accessors[numAccessors++] = &model.accessors[posIt->second];
-	const std::map<std::string, int>::const_iterator texCoordIt = primitive.attributes.find("TEXCOORD_0");
-	if (texCoordIt != primitive.attributes.end())
-		accessors[numAccessors++] = &model.accessors[texCoordIt->second];
-	const std::map<std::string, int>::const_iterator normIt = primitive.attributes.find("NORMAL");
-	if (normIt != primitive.attributes.end())
-		accessors[numAccessors++] = &model.accessors[normIt->second];
+	const tinygltf::Accessor* accessors[MAX_PRIMITIVES];
+	for (int i = 0; i < MAX_PRIMITIVES; ++i)
+	{
+		const std::map<std::string, int>::const_iterator it = primitive.attributes.find(primitivesToFind[i]);
+		if (it != primitive.attributes.end())
+			accessors[numAccessors++] = &model.accessors[it->second];
+	}
 	unsigned int sizeOfData = 0;
 	for (int i = 0; i < numAccessors; ++i)
 		sizeOfData += accessors[i]->count * SizeFromGlType(accessors[i]->componentType) * TinyGltfAttributNumElements(accessors[i]->type);

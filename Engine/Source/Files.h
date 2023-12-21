@@ -14,6 +14,7 @@ namespace tinygltf {
 typedef unsigned int GLenum;
 class Mesh {
 	unsigned int VBOEBO[2];
+	unsigned int vertexSize = 0;
 	unsigned int VAO;
 	unsigned int texIdx = 0;
 	unsigned int numIndices = 0;
@@ -25,6 +26,7 @@ class Mesh {
 public:
 	void Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive);
 	void Draw();
+	void GenerateTangents();
 };
 bool LoadGLTFModel(const char* assetPath, std::vector<Mesh*>& out);
 

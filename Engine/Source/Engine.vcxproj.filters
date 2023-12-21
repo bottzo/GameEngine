@@ -133,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="ModuleTextures.cpp" />
     <ClCompile Include="ModuleEditorCamera.cpp" />
+    <ClCompile Include="MikkTSpace\mikktspace.c">
+      <Filter>mikktspace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -336,6 +339,9 @@
     </ClInclude>
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="ModuleEditorCamera.h" />
+    <ClInclude Include="MikkTSpace\mikktspace.h">
+      <Filter>mikktspace</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -367,6 +373,9 @@
     </Filter>
     <Filter Include="DebugDraw">
       <UniqueIdentifier>{e84d9815-36ad-492c-ac34-7910d333eaae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mikktspace">
+      <UniqueIdentifier>{f9284ece-280d-4a93-8a5f-05876f7021c0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

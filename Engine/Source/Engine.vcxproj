@@ -193,6 +193,7 @@
     <ClCompile Include="MathGeoLib\include\Math\SSEMath.cpp" />
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
+    <ClCompile Include="MikkTSpace\mikktspace.c" />
     <ClCompile Include="ModuleDebugDraw.cpp" />
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleEditorCamera.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="MathGeoLib\include\Math\sse_mathfun.h" />
     <ClInclude Include="MathGeoLib\include\Math\TransformOps.h" />
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
+    <ClInclude Include="MikkTSpace\mikktspace.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="ModuleDebugDraw.h" />
     <ClInclude Include="ModuleEditor.h" />
