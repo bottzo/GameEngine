@@ -191,7 +191,46 @@ unsigned int TinyGltfAttributNumElements(int tinyDefineType)
 //	return 0;
 //}
 
+//TODO: Create vertex attribute information
+//typedef struct {
+//	unsigned int offset;
+//	unsigned int stride;
+//} Attribute;
+
 #include "MikkTSpace/mikktspace.h"
+typedef struct {
+	int numTriangles;
+	int posOffset;
+	int texCoordOffset;
+	int normOffset;
+	int vertexSize;
+	char* vertices;
+} MikkTSpaceStruct;
+
+static int GetNumFaces(const SMikkTSpaceContext* pContext)
+{
+	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
+	return ptr->numTriangles;
+}
+static int GetNumVerticesOfFace(const SMikkTSpaceContext* pContext, const int iFace) {
+	return 3;
+}
+static void GetPosition(const SMikkTSpaceContext* pContext, float fvPosOut[], const int iFace, const int iVert)
+{
+	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
+	fvPosOut = (float*)&ptr->vertices[(iFace* 3 + iVert)* ptr->vertexSize + ptr->posOffset];
+}
+static void GetTexCoord(const SMikkTSpaceContext* pContext, float fvTexcOut[], const int iFace, const int iVert)
+{
+	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
+	fvTexcOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->texCoordOffset];
+}
+static void GetNormal(const SMikkTSpaceContext* pContext, float fvNormOut[], const int iFace, const int iVert)
+{
+	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
+	fvNormOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->normOffset];
+}
+
 void Mesh::GenerateTangents()
 {
 	const unsigned int indexSize = SizeFromGlType(indexType);
@@ -202,15 +241,31 @@ void Mesh::GenerateTangents()
 	char* unweldedVertices = (char*)malloc(numIndices * vertexSize);
 	for (int i = 0; i < numIndices; ++i)
 	{
-		unsigned long long vertexIdx;
+		unsigned long long vertexIdx = 0;
 		memcpy(&vertexIdx, &indices[i * indexSize], indexSize);
+		//TODO: possible error en la endianes
+		//vertexIdx >>= sizeof(vertexIdx) - indexSize;
 		memcpy(&unweldedVertices[i * vertexSize], &vertices[vertexIdx], indexSize);
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
+	SMikkTSpaceInterface interfaceInput = {};
+	interfaceInput.m_getNumFaces = GetNumFaces;
+	interfaceInput.m_getNumVerticesOfFace = GetNumVerticesOfFace;
+	interfaceInput.m_getNormal = GetNormal;
+	interfaceInput.m_getPosition = GetPosition;
+	interfaceInput.m_getTexCoord = GetTexCoord;
+	MikkTSpaceStruct mikkInput = {};
+	mikkInput.numTriangles = numIndices;
+	mikkInput.posOffset = 0;
+	mikkInput.texCoordOffset = 3*sizeof(float);
+	mikkInput.normOffset = 5 * sizeof(float);
+	mikkInput.vertexSize = 8 * sizeof(float);
+	mikkInput.vertices = unweldedVertices;
 	SMikkTSpaceContext tangContext = {};
-	tangContext.m_pUserData = unweldedVertices;
+	tangContext.m_pInterface = &interfaceInput;
+	tangContext.m_pUserData = &mikkInput;
 	if (genTangSpaceDefault(&tangContext))
 	{
 		LOG("OKOKOKOK");
@@ -263,7 +318,6 @@ void Mesh::LoadBufferData(const tinygltf::Model& model, const tinygltf::Accessor
 		attributeOffset += attribElements * elementSize;
 	}
 
-	GenerateTangents();
 }
 
 void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const tinygltf::Primitive& primitive)
@@ -305,6 +359,8 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	texIdx = App->textures->GetTexture(img.uri.c_str());
 
 	glBindVertexArray(0);
+
+	GenerateTangents();
 
 	//TODO: evitar crear programa a cada load
 	//Com pasar els uniforms per a cada prorama?
