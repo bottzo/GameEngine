@@ -205,6 +205,7 @@ typedef struct {
 	int normOffset;
 	int vertexSize;
 	char* vertices;
+	char* tVertices;
 } MikkTSpaceStruct;
 
 static int GetNumFaces(const SMikkTSpaceContext* pContext)
@@ -231,9 +232,11 @@ static void GetNormal(const SMikkTSpaceContext* pContext, float fvNormOut[], con
 	fvNormOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->normOffset];
 }
 
-void (*m_setTSpaceBasic)(const SMikkTSpaceContext* pContext, const float fvTangent[], const float fSign, const int iFace, const int iVert)
+void SetTSpaceBasic(const SMikkTSpaceContext* pContext, const float fvTangent[], const float fSign, const int iFace, const int iVert)
 {
-
+	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
+	//Escriure tota la info del vertex + les tangents
+	ptr->tVertices[] = fvTangent;
 }
 
 void Mesh::GenerateTangents()
@@ -261,14 +264,17 @@ void Mesh::GenerateTangents()
 	interfaceInput.m_getNormal = GetNormal;
 	interfaceInput.m_getPosition = GetPosition;
 	interfaceInput.m_getTexCoord = GetTexCoord;
-	interfaceInput.m_setTSpace = SetTSpace;
+	interfaceInput.m_setTSpaceBasic = SetTSpaceBasic;
 	MikkTSpaceStruct mikkInput = {};
 	mikkInput.numTriangles = numIndices;
 	mikkInput.posOffset = 0;
 	mikkInput.texCoordOffset = 3*sizeof(float);
 	mikkInput.normOffset = 5 * sizeof(float);
 	mikkInput.vertexSize = 8 * sizeof(float);
-	mikkInput.vertices = unweldedVertices;
+	mikkInput.tVertices = unweldedVertices;
+	//Les mikktangents son vec4
+	char* unweldedTVertices = (char*)malloc(numIndices * (vertexSize + 4 * sizeof(float)));
+	mikkInput.vertices = unweldedTVertices;
 	SMikkTSpaceContext tangContext = {};
 	tangContext.m_pInterface = &interfaceInput;
 	tangContext.m_pUserData = &mikkInput;
