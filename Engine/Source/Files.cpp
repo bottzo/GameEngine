@@ -231,6 +231,11 @@ static void GetNormal(const SMikkTSpaceContext* pContext, float fvNormOut[], con
 	fvNormOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->normOffset];
 }
 
+void (*m_setTSpaceBasic)(const SMikkTSpaceContext* pContext, const float fvTangent[], const float fSign, const int iFace, const int iVert)
+{
+
+}
+
 void Mesh::GenerateTangents()
 {
 	const unsigned int indexSize = SizeFromGlType(indexType);
@@ -256,6 +261,7 @@ void Mesh::GenerateTangents()
 	interfaceInput.m_getNormal = GetNormal;
 	interfaceInput.m_getPosition = GetPosition;
 	interfaceInput.m_getTexCoord = GetTexCoord;
+	interfaceInput.m_setTSpace = SetTSpace;
 	MikkTSpaceStruct mikkInput = {};
 	mikkInput.numTriangles = numIndices;
 	mikkInput.posOffset = 0;
