@@ -136,6 +136,9 @@
     <ClCompile Include="MikkTSpace\mikktspace.c">
       <Filter>mikktspace</Filter>
     </ClCompile>
+    <ClCompile Include="MikkTSpace\weldmesh.c">
+      <Filter>mikktspace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -340,6 +343,9 @@
     <ClInclude Include="ModuleTextures.h" />
     <ClInclude Include="ModuleEditorCamera.h" />
     <ClInclude Include="MikkTSpace\mikktspace.h">
+      <Filter>mikktspace</Filter>
+    </ClInclude>
+    <ClInclude Include="MikkTSpace\weldmesh.h">
       <Filter>mikktspace</Filter>
     </ClInclude>
   </ItemGroup>

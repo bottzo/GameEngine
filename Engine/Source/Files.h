@@ -30,4 +30,6 @@ public:
 };
 bool LoadGLTFModel(const char* assetPath, std::vector<Mesh*>& out);
 
+void GenerateTangents(unsigned int indexType, unsigned int VBOEBO[1], unsigned int numIndices, unsigned int vertexSize);
+
 #endif // !FILES

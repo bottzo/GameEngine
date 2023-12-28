@@ -198,8 +198,9 @@ unsigned int TinyGltfAttributNumElements(int tinyDefineType)
 //} Attribute;
 
 #include "MikkTSpace/mikktspace.h"
+#include "MikkTSpace/weldmesh.h"
 typedef struct {
-	int numTriangles;
+	int numVertices;
 	int posOffset;
 	int texCoordOffset;
 	int normOffset;
@@ -211,7 +212,7 @@ typedef struct {
 static int GetNumFaces(const SMikkTSpaceContext* pContext)
 {
 	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
-	return ptr->numTriangles;
+	return ptr->numVertices / 3;
 }
 static int GetNumVerticesOfFace(const SMikkTSpaceContext* pContext, const int iFace) {
 	return 3;
@@ -219,24 +220,98 @@ static int GetNumVerticesOfFace(const SMikkTSpaceContext* pContext, const int iF
 static void GetPosition(const SMikkTSpaceContext* pContext, float fvPosOut[], const int iFace, const int iVert)
 {
 	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
-	fvPosOut = (float*)&ptr->vertices[(iFace* 3 + iVert)* ptr->vertexSize + ptr->posOffset];
+	float* posOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->posOffset];
+	fvPosOut[0] = posOut[0];
+	fvPosOut[1] = posOut[1];
+	fvPosOut[2] = posOut[2];
 }
 static void GetTexCoord(const SMikkTSpaceContext* pContext, float fvTexcOut[], const int iFace, const int iVert)
 {
 	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
-	fvTexcOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->texCoordOffset];
+	float* texCOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->texCoordOffset];
+	fvTexcOut[0] = texCOut[0];
+	fvTexcOut[1] = texCOut[1];
 }
 static void GetNormal(const SMikkTSpaceContext* pContext, float fvNormOut[], const int iFace, const int iVert)
 {
 	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
-	fvNormOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->normOffset];
+	float* normalOut = (float*)&ptr->vertices[(iFace * 3 + iVert) * ptr->vertexSize + ptr->normOffset];
+	fvNormOut[0] = normalOut[0];
+	fvNormOut[1] = normalOut[1];
+	fvNormOut[2] = normalOut[2];
 }
 
-void SetTSpaceBasic(const SMikkTSpaceContext* pContext, const float fvTangent[], const float fSign, const int iFace, const int iVert)
+static void SetTSpaceBasic(const SMikkTSpaceContext* pContext, const float fvTangent[], const float fSign, const int iFace, const int iVert)
 {
 	MikkTSpaceStruct* ptr = (MikkTSpaceStruct*)pContext->m_pUserData;
 	//Escriure tota la info del vertex + les tangents
-	ptr->tVertices[] = fvTangent;
+	const unsigned int vertexIdx = (iFace * 3 + iVert) * ptr->vertexSize;
+	const unsigned int vertexTIdx = (iFace * 3 + iVert) * (ptr->vertexSize + sizeof(float) * 4);
+	memcpy(&ptr->tVertices[vertexTIdx], &ptr->vertices[vertexIdx], ptr->vertexSize);
+	memcpy(&ptr->tVertices[vertexTIdx + ptr->vertexSize], fvTangent, 3*sizeof(float));
+	memcpy(&ptr->tVertices[vertexTIdx + ptr->vertexSize + 3*sizeof(float)], &fSign, sizeof(float));
+}
+
+void GenerateTangents(unsigned int indexType, unsigned int VBOEBO[1], unsigned int numIndices, unsigned int vertexSize)
+{
+	const unsigned int indexSize = SizeFromGlType(indexType);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
+	const char* indices = (const char*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_READ_ONLY);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
+	const char* vertices = (const char*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+	char* unweldedVertices = (char*)malloc(numIndices * vertexSize);
+	for (int i = 0; i < numIndices; ++i)
+	{
+		unsigned long long vertexIdx = 0;
+		memcpy(&vertexIdx, &indices[i * indexSize], indexSize);
+		//TODO: possible error en la endianes
+		//vertexIdx >>= sizeof(vertexIdx) - indexSize;
+		memcpy(&unweldedVertices[i * vertexSize], &vertices[vertexIdx * vertexSize], vertexSize);
+	}
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+	SMikkTSpaceInterface interfaceInput = {};
+	interfaceInput.m_getNumFaces = GetNumFaces;
+	interfaceInput.m_getNumVerticesOfFace = GetNumVerticesOfFace;
+	interfaceInput.m_getNormal = GetNormal;
+	interfaceInput.m_getPosition = GetPosition;
+	interfaceInput.m_getTexCoord = GetTexCoord;
+	interfaceInput.m_setTSpaceBasic = SetTSpaceBasic;
+	MikkTSpaceStruct mikkInput = {};
+	mikkInput.numVertices = numIndices;
+	mikkInput.posOffset = 0;
+	mikkInput.texCoordOffset = 3 * sizeof(float);
+	mikkInput.normOffset = 5 * sizeof(float);
+	mikkInput.vertexSize = 8 * sizeof(float);
+	mikkInput.vertices = unweldedVertices;
+	//Les mikktangents son vec4
+	char* unweldedTVertices = (char*)malloc(numIndices * (vertexSize + 4 * sizeof(float)));
+	mikkInput.tVertices = unweldedTVertices;
+	SMikkTSpaceContext tangContext = {};
+	tangContext.m_pInterface = &interfaceInput;
+	tangContext.m_pUserData = &mikkInput;
+	if (!genTangSpaceDefault(&tangContext))
+		LOG("ERROR: Could not generate the tangent space");
+
+	int* piRemapTable = (int*)malloc(mikkInput.numVertices * sizeof(int));
+	float* pfVertexDataOut = (float*)malloc(mikkInput.numVertices * 12 * sizeof(float));
+	unsigned int uniqueVertices =  WeldMesh(piRemapTable, pfVertexDataOut,
+		(float*)mikkInput.tVertices, mikkInput.numVertices, 12);
+	free(unweldedTVertices);
+	free(unweldedVertices);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
+	glBufferData(GL_ARRAY_BUFFER, uniqueVertices * sizeof(float), pfVertexDataOut, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, uniqueVertices * sizeof(int), piRemapTable, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 12  * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(5 * sizeof(float)));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float),(void*)(8*sizeof(float)));
+	glEnableVertexAttribArray(3);
+	free(piRemapTable);
+	free(pfVertexDataOut);
 }
 
 void Mesh::GenerateTangents()
@@ -253,7 +328,7 @@ void Mesh::GenerateTangents()
 		memcpy(&vertexIdx, &indices[i * indexSize], indexSize);
 		//TODO: possible error en la endianes
 		//vertexIdx >>= sizeof(vertexIdx) - indexSize;
-		memcpy(&unweldedVertices[i * vertexSize], &vertices[vertexIdx], indexSize);
+		memcpy(&unweldedVertices[i * vertexSize], &vertices[vertexIdx * vertexSize], vertexSize);
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 	glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
@@ -266,22 +341,20 @@ void Mesh::GenerateTangents()
 	interfaceInput.m_getTexCoord = GetTexCoord;
 	interfaceInput.m_setTSpaceBasic = SetTSpaceBasic;
 	MikkTSpaceStruct mikkInput = {};
-	mikkInput.numTriangles = numIndices;
+	mikkInput.numVertices = numIndices;
 	mikkInput.posOffset = 0;
 	mikkInput.texCoordOffset = 3*sizeof(float);
 	mikkInput.normOffset = 5 * sizeof(float);
 	mikkInput.vertexSize = 8 * sizeof(float);
-	mikkInput.tVertices = unweldedVertices;
+	mikkInput.vertices = unweldedVertices;
 	//Les mikktangents son vec4
 	char* unweldedTVertices = (char*)malloc(numIndices * (vertexSize + 4 * sizeof(float)));
-	mikkInput.vertices = unweldedTVertices;
+	mikkInput.tVertices = unweldedTVertices;
 	SMikkTSpaceContext tangContext = {};
 	tangContext.m_pInterface = &interfaceInput;
 	tangContext.m_pUserData = &mikkInput;
-	if (genTangSpaceDefault(&tangContext))
-	{
-		LOG("OKOKOKOK");
-	}
+	if (!genTangSpaceDefault(&tangContext))
+		LOG("ERROR: Could not generate the tangent space");
 }
 
 #include "Application.h"
