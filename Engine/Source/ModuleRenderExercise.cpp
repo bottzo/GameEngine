@@ -19,7 +19,7 @@ ModuleRenderExercise::~ModuleRenderExercise()
 
 bool ModuleRenderExercise::Init()
 {
-	programId = CreateProgram("Shaders/Vertex.glsl", "Shaders/Fragment.glsl");
+	programId = CreateProgram("Shaders/MeshVertex.glsl", "Shaders/MeshFragment.glsl");
 
 	if (programId == 0)
 		return false;
@@ -30,6 +30,13 @@ bool ModuleRenderExercise::Init()
 	glUniformMatrix4fv(0, 1, GL_TRUE, model.ptr());
 	glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
 	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
+
+
+	glUniform3f(4, 0.0f, 0.0f, 0.1f);
+	glUniform3f(5, 1.f, 1.f, 1.f);
+	glUniform3f(6, 0.3f, 0.4f, 0.6f);
+	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
+	glUniform1f(8, 0.1f);
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -79,6 +86,8 @@ update_status ModuleRenderExercise::Update()
 
 	glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
 	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
+
+	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
 
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, baboonTex);
