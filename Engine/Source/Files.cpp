@@ -301,15 +301,13 @@ void GenerateTangents(unsigned int indexType, unsigned int VBOEBO[1], unsigned i
 	free(unweldedTVertices);
 	free(unweldedVertices);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, uniqueVertices * sizeof(float), pfVertexDataOut, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBOEBO[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, uniqueVertices * sizeof(int), piRemapTable, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, uniqueVertices * 12 * sizeof(float), pfVertexDataOut, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), 0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 12  * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(3 * sizeof(float)));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(5 * sizeof(float)));
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float),(void*)(8*sizeof(float)));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(8 * sizeof(float)));
 	glEnableVertexAttribArray(3);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mikkInput.numVertices * sizeof(int), piRemapTable, GL_STATIC_DRAW);
 	free(piRemapTable);
 	free(pfVertexDataOut);
 }
