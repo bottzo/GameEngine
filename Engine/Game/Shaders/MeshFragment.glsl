@@ -4,7 +4,7 @@
 in vec2 oUv;
 in vec3 surfacePos;
 in vec3 lightDir;
-in vec3 cameraPos;
+in vec3 viewDir;
 
 layout (location = 3) uniform sampler2D theSampler;
 layout (location = 9) uniform sampler2D normalMapSampler;
@@ -12,6 +12,7 @@ layout (location = 9) uniform sampler2D normalMapSampler;
 layout (location = 5)uniform vec3 lightCol;
 layout (location = 6)uniform vec3 ambientCol;
 layout (location = 8)uniform float kD;
+layout (location = 10)uniform float brightness;
 
 out vec4 fragCol;
 
@@ -22,8 +23,8 @@ void main()
 	vec3 D = texture(theSampler, oUv).xyz;
 	
 	float diffuse = max(dot(N,L),0.0);
-	vec3 V = normalize(surfacePos - cameraPos);
+	vec3 V = normalize(viewDir);
 	vec3 R = normalize(reflect(L, N));
-	float specular = pow(max(dot(R,V), 0.0),20);
+	float specular = pow(max(dot(R,V), 0.0),brightness);
 	fragCol = vec4(ambientCol * D + kD * diffuse * D * lightCol + specular * lightCol * (1 - kD), 1);
 }

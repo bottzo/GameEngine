@@ -38,6 +38,7 @@ bool ModuleRenderExercise::Init()
 	glUniform3fv(6, 1, ambientCol);
 	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
 	glUniform1f(8, kD);
+	glUniform1f(10, brightness);
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -92,9 +93,11 @@ update_status ModuleRenderExercise::Update()
 	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
 	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
-	ImGui::Begin("Light");
+	ImGui::Begin("Lights");
 	if (ImGui::DragFloat("KD", &kD, 0.0f, 1.0f))
 		glUniform1f(8, kD);
+	if (ImGui::DragFloat("Brightness", &brightness, 0.0f, 1.0f))
+		glUniform1f(10, brightness);
 	if (ImGui::DragFloat3("LightDir", lightDir, 0.0f, 1.0f))
 		glUniform3fv(4, 1, lightDir);
 	if (ImGui::ColorPicker3("LightCol", lightCol))

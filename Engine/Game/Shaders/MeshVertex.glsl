@@ -14,9 +14,8 @@ layout (location = 7)uniform vec3 cPos;
 
 //out vec3 oNorm;
 out vec2 oUv;
-out vec3 surfacePos;
 out vec3 lightDir;
-out vec3 cameraPos;
+out vec3 viewDir;
 
 void main()
 {
@@ -24,11 +23,11 @@ void main()
 	vec3 T = normalize(vec3(model * vec4(inTang.xyz, 0.0))); 
 	vec3 B = inTang.w * cross(N, T);
 	mat3 TBNInv = transpose(mat3(T,B,N));
-	lightDir = lDir * TBNInv;
-	cameraPos = cPos * TBNInv;
+	lightDir = TBNInv * lDir;
 
 	oUv = inUv;
 	//oNorm = transpose(inverse(mat3(model))) * inNorm;
-	surfacePos = (model*vec4(inPos,1)).xyz * TBNInv;
+	vec3 surfacePos = (model*vec4(inPos,1)).xyz * TBNInv;
+	viewDir = TBNInv * (surfacePos - cPos);
 	gl_Position = projection * view * model * vec4(inPos,1);
 }
