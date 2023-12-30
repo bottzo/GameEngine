@@ -8,6 +8,7 @@
 #include "ModuleTextures.h"
 #include "ModuleEditorCamera.h"
 #include "Files.h"
+#include "imgui.h"
 
 ModuleRenderExercise::ModuleRenderExercise() 
 {
@@ -32,11 +33,11 @@ bool ModuleRenderExercise::Init()
 	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
 
-	glUniform3f(4, 0.0f, 0.0f, 0.1f);
-	glUniform3f(5, 1.f, 1.f, 1.f);
-	glUniform3f(6, 0.3f, 0.4f, 0.6f);
+	glUniform3fv(4, 1, lightDir);
+	glUniform3fv(5, 1, lightCol);
+	glUniform3fv(6, 1, ambientCol);
 	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
-	glUniform1f(8, 0.1f);
+	glUniform1f(8, kD);
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -66,11 +67,15 @@ bool ModuleRenderExercise::Init()
 	GenerateTangents(GL_UNSIGNED_INT, VBOEBO, 6, 8 * sizeof(float));
 
 	glBindVertexArray(0);
-	baboonTex = App->textures->GetTexture("brickwall.jpg");
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, baboonTex);
+	wallTex = App->textures->GetTexture("brickwall.jpg");
+	wallNormTex = App->textures->GetTexture("brickwall_normal.jpg");
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, wallTex);
 	//glUseProgram(programId);
-	glUniform1i(3, 3);
+	glUniform1i(3, 2);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, wallNormTex);
+	glUniform1i(9, 3);
 
 	//LoadGLTFModel("BakerHouse.gltf", meshes);
 
@@ -82,16 +87,28 @@ update_status ModuleRenderExercise::Update()
 {
 	glBindVertexArray(VAO);
 	glUseProgram(programId);
-	//glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
 	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
 	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
+	ImGui::Begin("Light");
+	if (ImGui::DragFloat("KD", &kD, 0.0f, 1.0f))
+		glUniform1f(8, kD);
+	if (ImGui::DragFloat3("LightDir", lightDir, 0.0f, 1.0f))
+		glUniform3fv(4, 1, lightDir);
+	if (ImGui::ColorPicker3("LightCol", lightCol))
+		glUniform3fv(5, 1, lightCol);
+	if (ImGui::ColorPicker3("AmbientCol", ambientCol))
+		glUniform3fv(6, 1, ambientCol);
+	ImGui::End();
 
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, wallTex);
+	//glUniform1i(3, 3);
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, baboonTex);
-	//glUniform1i(3, 1);
+	glBindTexture(GL_TEXTURE_2D, wallNormTex);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glUseProgram(0);
@@ -107,7 +124,8 @@ bool ModuleRenderExercise::CleanUp()
 {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(2, VBOEBO);
-	glDeleteTextures(1, &baboonTex);
+	glDeleteTextures(1, &wallTex);
+	glDeleteTextures(1, &wallNormTex);
 	return true;
 }
 

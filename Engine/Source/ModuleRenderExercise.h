@@ -25,7 +25,13 @@ private:
 	unsigned int VAO;
 	unsigned int VBOEBO[2];
 
-	unsigned int baboonTex;
+	unsigned int wallTex;
+	unsigned int wallNormTex;
+
+	float kD = 0.2;
+	float lightDir[3] = { 0.0f, 0.0f, 0.1f };
+	float lightCol[3] = { 1.f, 1.f, 1.f };
+	float ambientCol[3] = { 0.3f, 0.4f, 0.6f };
 
 	std::vector<Mesh*>meshes;
 };
