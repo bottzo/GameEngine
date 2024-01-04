@@ -12,7 +12,7 @@
 
 Application::Application()
 {
-	modules.reserve(7);
+	modules.reserve(8);
 	// Order matters: they will Init/start/update in this order
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(window = new ModuleWindow());

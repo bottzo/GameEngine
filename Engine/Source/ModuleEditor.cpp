@@ -78,6 +78,8 @@ update_status ModuleEditor::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
+#include "GL/glew.h"
+#include "ModuleRenderExercise.h"
 // Called every draw update
 update_status ModuleEditor::Update()
 {
@@ -87,12 +89,12 @@ update_status ModuleEditor::Update()
         ImGui::ShowDemoWindow(&a);
 #endif // DEBUG
 
-    ImGui::Begin("Console");
-    //ImGui::BeginChild("Console Outpupt", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
-    for(std::string log : logs)
-        ImGui::TextUnformatted(log.c_str());
-    ImGui::End();
-    
+    //ImGui::Begin("Console");
+    ////ImGui::BeginChild("Console Outpupt", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
+    //for(std::string log : logs)
+    //    ImGui::TextUnformatted(log.c_str());
+    //ImGui::End();
+
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

@@ -6,8 +6,13 @@ layout(location = 2) in vec3 inNorm;
 layout(location = 3) in vec4 inTang;
 
 layout(location = 0)uniform mat4 model;
-layout(location = 1) uniform mat4 view;
-layout(location = 2) uniform mat4 projection;
+//layout(location = 1) uniform mat4 view;
+//layout(location = 2) uniform mat4 projection;
+
+layout(std140, binding = 1) uniform CameraMatrices{
+	mat4 view;
+	mat4 proj;
+};
 
 layout (location = 4)uniform vec3 lDir;
 layout (location = 7)uniform vec3 cPos;
@@ -29,5 +34,5 @@ void main()
 	//oNorm = transpose(inverse(mat3(model))) * inNorm;
 	vec3 surfacePos = (model*vec4(inPos,1)).xyz * TBNInv;
 	viewDir = TBNInv * (surfacePos - cPos);
-	gl_Position = projection * view * model * vec4(inPos,1);
+	gl_Position = proj * view * model * vec4(inPos,1);
 }

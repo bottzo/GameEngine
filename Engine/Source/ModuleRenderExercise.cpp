@@ -40,6 +40,10 @@ bool ModuleRenderExercise::Init()
 	glUniform1f(8, kD);
 	glUniform1f(10, brightness);
 
+	unsigned int index = glGetUniformBlockIndex(programId, "CameraMatrices");
+	glUniformBlockBinding(programId, index, 1);
+	//glUniformBlockBinding(programId, 1, 0);
+
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 	 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -89,8 +93,8 @@ update_status ModuleRenderExercise::Update()
 	glBindVertexArray(VAO);
 	glUseProgram(programId);
 
-	glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
-	glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
+	//glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
+	//glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
 	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
 	ImGui::Begin("Lights");

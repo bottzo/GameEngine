@@ -10,6 +10,7 @@ class ModuleEditorCamera : public Module {
 public:
 	bool Init() override;
 	update_status Update() override;
+	bool CleanUp() override;
 
 	void LookAt(float3 eyePos, float3 targetPos, float3 upVector);
 	void Transform(float3 vec);
@@ -19,6 +20,7 @@ public:
 	float4x4 GetProjectionMatrix() const { return frustum.ProjectionMatrix(); }
 private:
 	Frustum frustum;
+	unsigned int cameraUnis;
 };
 
 #endif // !MODULEEDITORCAMERA

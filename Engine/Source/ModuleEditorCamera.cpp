@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleInput.h"
+#include "GL/glew.h"
 
 bool ModuleEditorCamera::Init()
 {
@@ -14,6 +15,11 @@ bool ModuleEditorCamera::Init()
 	App->window->GetWindowSize(&w, &h);
 	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w / (float)h);
 	LookAt(float3(0.0f, 4.0f, 8.0f), float3(0.0f, 0.0f, 0.0f), float3::unitY);
+	glGenBuffers(1, &cameraUnis);
+	glBindBuffer(GL_UNIFORM_BUFFER, cameraUnis);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 16 * 2, NULL, GL_STATIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, cameraUnis);
+	//glBindBufferRange(GL_UNIFORM_BUFFER, 2, uboExampleBlock, 0, sizeof(float)*16*2);
 	return true;
 }
 
@@ -22,6 +28,7 @@ update_status ModuleEditorCamera::Update()
 	//Fer state machine amb els inputs !!!!
 	//Camera velocity variable independent of framerate
 	//state moving/rot camera
+
 	if(App->input->GetMouseWheelMotion() != 0)
 		Transform(float3(0, 0, 0.05f* App->input->GetMouseWheelMotion()));
 	if (App->input->GetMouseKey(MouseButtons::BUTTON_RIGHT) == KeyState::KEY_REPEAT)
@@ -65,6 +72,12 @@ update_status ModuleEditorCamera::Update()
 		LookAt(focus, float3(0, 0, 0), newUp);
 	}
 
+	glBindBuffer(GL_UNIFORM_BUFFER, cameraUnis);
+	float4x4 view = GetViewMatrix();
+	float4x4 projection = GetProjectionMatrix();
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float) * 16, view.ptr());
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(float) * 16, sizeof(float) * 16, projection.ptr());
+
 	return UPDATE_CONTINUE;
 }
 
@@ -102,4 +115,10 @@ void ModuleEditorCamera::LookAt(float3 eyePos, float3 targetPos, float3 upVector
 	frustum.pos = eyePos;
 	frustum.front = forward;
 	frustum.up = up;
+}
+
+bool ModuleEditorCamera::CleanUp()
+{
+	glDeleteBuffers(1, &cameraUnis);
+	return true;
 }
