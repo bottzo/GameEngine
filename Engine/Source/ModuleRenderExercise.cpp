@@ -40,8 +40,8 @@ bool ModuleRenderExercise::Init()
 	glUniform1f(8, kD);
 	glUniform1f(10, brightness);
 
-	unsigned int index = glGetUniformBlockIndex(programId, "CameraMatrices");
-	glUniformBlockBinding(programId, index, 1);
+	//unsigned int index = glGetUniformBlockIndex(programId, "CameraMatrices");
+	//glUniformBlockBinding(programId, index, 0);
 	//glUniformBlockBinding(programId, 1, 0);
 
 	float vertex[] = {
@@ -53,6 +53,8 @@ bool ModuleRenderExercise::Init()
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, App->editorCamera->GetCameraUniffromsId());
 
 	glGenBuffers(2, VBOEBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBOEBO[0]);

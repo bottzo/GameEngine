@@ -18,7 +18,7 @@ bool ModuleEditorCamera::Init()
 	glGenBuffers(1, &cameraUnis);
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUnis);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 16 * 2, NULL, GL_STATIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, cameraUnis);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, cameraUnis);
 	//glBindBufferRange(GL_UNIFORM_BUFFER, 2, uboExampleBlock, 0, sizeof(float)*16*2);
 	return true;
 }

@@ -19,10 +19,10 @@ out vec4 fragCol;
 void main()
 {
 	vec3 N = normalize(texture(normalMapSampler, oUv).rgb * 2.0 - 1.0);
-	vec3 L = -normalize(lightDir);
+	vec3 L = normalize(lightDir);
 	vec3 D = texture(theSampler, oUv).xyz;
 	
-	float diffuse = max(dot(N,L),0.0);
+	float diffuse = max(dot(N,-L),0.0);
 	vec3 V = normalize(viewDir);
 	vec3 R = normalize(reflect(L, N));
 	float specular = pow(max(dot(R,V), 0.0),brightness);
