@@ -1,10 +1,12 @@
 #version 460 core
 
 //in vec3 oNorm;
-in vec2 oUv;
-in vec3 surfacePos;
-in vec3 lightDir;
-in vec3 viewDir;
+//in vec3 surfacePos;
+in VertToFrag{
+	vec2 uv;
+	vec3 lightDir;
+	vec3 viewDir;
+};
 
 layout (location = 3) uniform sampler2D theSampler;
 layout (location = 9) uniform sampler2D normalMapSampler;
@@ -18,11 +20,11 @@ out vec4 fragCol;
 
 void main()
 {
-	vec3 N = normalize(texture(normalMapSampler, oUv).rgb * 2.0 - 1.0);
-	vec3 L = normalize(lightDir);
-	vec3 D = texture(theSampler, oUv).xyz;
+	vec3 N = normalize(texture(normalMapSampler, uv).rgb * 2.0 - 1.0);
+	vec3 L = -normalize(lightDir);
+	vec3 D = texture(theSampler, uv).xyz;
 	
-	float diffuse = max(dot(N,-L),0.0);
+	float diffuse = max(dot(N,L),0.0);
 	vec3 V = normalize(viewDir);
 	vec3 R = normalize(reflect(L, N));
 	float specular = pow(max(dot(R,V), 0.0),brightness);

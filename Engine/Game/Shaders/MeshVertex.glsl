@@ -18,9 +18,11 @@ layout (location = 4)uniform vec3 lDir;
 layout (location = 7)uniform vec3 cPos;
 
 //out vec3 oNorm;
-out vec2 oUv;
-out vec3 lightDir;
-out vec3 viewDir;
+out VertToFrag {
+	vec2 uv;
+	vec3 lightDir;
+	vec3 viewDir;
+};
 
 void main()
 {
@@ -30,9 +32,9 @@ void main()
 	mat3 TBNInv = transpose(mat3(T,B,N));
 	lightDir = TBNInv * lDir;
 
-	oUv = inUv;
+	uv = inUv;
 	//oNorm = transpose(inverse(mat3(model))) * inNorm;
-	vec3 surfacePos = (model*vec4(inPos,1)).xyz * TBNInv;
+	vec3 surfacePos = TBNInv *((model*vec4(inPos,1)).xyz);
 	viewDir = TBNInv * (surfacePos - cPos);
 	gl_Position = proj * view * model * vec4(inPos,1);
 }
