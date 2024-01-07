@@ -72,11 +72,10 @@ update_status ModuleEditorCamera::Update()
 		LookAt(focus, float3(0, 0, 0), newUp);
 	}
 
+	//TODO: aixo nomes si canvia la camera
 	glBindBuffer(GL_UNIFORM_BUFFER, cameraUnis);
-	float4x4 view = GetViewMatrix();
-	float4x4 projection = GetProjectionMatrix();
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float) * 16, view.ptr());
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(float) * 16, sizeof(float) * 16, projection.ptr());
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float) * 16, GetViewMatrix().Transposed().ptr());
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(float) * 16, sizeof(float) * 16, GetProjectionMatrix().Transposed().ptr());
 
 	return UPDATE_CONTINUE;
 }

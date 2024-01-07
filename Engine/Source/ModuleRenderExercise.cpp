@@ -40,9 +40,9 @@ bool ModuleRenderExercise::Init()
 	glUniform1f(8, kD);
 	glUniform1f(10, brightness);
 
+	//Not needed because we specify the binding directly on the shader
 	//unsigned int index = glGetUniformBlockIndex(programId, "CameraMatrices");
 	//glUniformBlockBinding(programId, index, 0);
-	//glUniformBlockBinding(programId, 1, 0);
 
 	float vertex[] = {
 	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,

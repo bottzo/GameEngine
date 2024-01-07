@@ -22,7 +22,7 @@ void main()
 {
 	vec3 N = normalize(texture(normalMapSampler, uv).rgb * 2.0 - 1.0);
 	vec3 L = -normalize(lightDir);
-	vec3 D = texture(theSampler, uv).xyz;
+	vec3 D = texture(theSampler, uv).rgb;
 	
 	float diffuse = max(dot(N,L),0.0);
 	vec3 V = normalize(viewDir);
