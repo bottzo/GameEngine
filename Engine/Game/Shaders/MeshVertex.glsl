@@ -17,11 +17,12 @@ layout(std140, binding = 0) uniform CameraMatrices{
 layout (location = 4)uniform vec3 lDir;
 layout (location = 7)uniform vec3 cPos;
 
-//out vec3 oNorm;
+out vec3 oNorm;
 out VertToFrag {
 	vec2 uv;
 	vec3 lightDir;
-	vec3 viewDir;
+	vec3 tangentFragPos;
+	vec3 tangentCameraPos;
 };
 
 void main()
@@ -34,7 +35,8 @@ void main()
 
 	uv = inUv;
 	//oNorm = transpose(inverse(mat3(model))) * inNorm;
-	vec3 surfacePos = TBNInv *((model*vec4(inPos,1)).xyz);
-	viewDir = TBNInv * (surfacePos - cPos);
-	gl_Position = proj * view * model * vec4(inPos,1);
+	vec4 modelPos = (model*vec4(inPos,1));
+	tangentFragPos = TBNInv * modelPos.xyz;
+	tangentCameraPos = TBNInv * cPos;
+	gl_Position = proj * view * modelPos;
 }

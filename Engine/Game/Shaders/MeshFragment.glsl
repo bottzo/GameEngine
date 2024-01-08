@@ -5,7 +5,8 @@
 in VertToFrag{
 	vec2 uv;
 	vec3 lightDir;
-	vec3 viewDir;
+	vec3 tangentFragPos;
+	vec3 tangentCameraPos;
 };
 
 layout (location = 3) uniform sampler2D theSampler;
@@ -25,7 +26,7 @@ void main()
 	vec3 D = texture(theSampler, uv).rgb;
 	
 	float diffuse = max(dot(N,L),0.0);
-	vec3 V = normalize(viewDir);
+	vec3 V = normalize(tangentFragPos - tangentCameraPos);
 	vec3 R = normalize(reflect(L, N));
 	float specular = pow(max(dot(R,V), 0.0),brightness);
 	fragCol = vec4(ambientCol * D + kD * diffuse * D * lightCol + specular * lightCol * (1 - kD), 1);

@@ -23,6 +23,12 @@ bool ModuleEditorCamera::Init()
 	return true;
 }
 
+void ModuleEditorCamera::WindowResized(int w, int h)
+{
+	App->window->GetWindowSize(&w, &h);
+	frustum.horizontalFov = 2.f * atanf(tanf(frustum.verticalFov * 0.5f) * (float)w / (float)h);
+}
+
 update_status ModuleEditorCamera::Update()
 {
 	//Fer state machine amb els inputs !!!!

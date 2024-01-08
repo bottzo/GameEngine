@@ -458,7 +458,7 @@ void Mesh::Load(const tinygltf::Model& model, const tinygltf::Mesh& mesh, const 
 	glUniform3f(4, 0.0f, 0.0f, 0.1f);
 	glUniform3f(5, 1.f, 1.f, 1.f);
 	glUniform3f(6, 0.3f, 0.4f, 0.6f);
-	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
+	glUniform3fv(7, 1, App->editorCamera->GetPos().ptr());
 	glUniform1f(8, 0.1f);
 }
 

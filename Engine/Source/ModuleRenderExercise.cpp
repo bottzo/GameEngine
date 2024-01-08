@@ -36,7 +36,7 @@ bool ModuleRenderExercise::Init()
 	glUniform3fv(4, 1, lightDir);
 	glUniform3fv(5, 1, lightCol);
 	glUniform3fv(6, 1, ambientCol);
-	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
+	glUniform3fv(7, 1, App->editorCamera->GetPos().ptr());
 	glUniform1f(8, kD);
 	glUniform1f(10, brightness);
 
@@ -98,7 +98,7 @@ update_status ModuleRenderExercise::Update()
 	//glUniformMatrix4fv(1, 1, GL_TRUE, App->editorCamera->GetViewMatrix().ptr());
 	//glUniformMatrix4fv(2, 1, GL_TRUE, App->editorCamera->GetProjectionMatrix().ptr());
 
-	glUniform3fv(7, 1, App->editorCamera->GetFront().ptr());
+	glUniform3fv(7, 1, App->editorCamera->GetPos().ptr());
 	ImGui::Begin("Lights");
 	if (ImGui::DragFloat("KD", &kD, 0.0f, 1.0f))
 		glUniform1f(8, kD);
